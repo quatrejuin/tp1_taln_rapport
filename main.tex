@@ -27,16 +27,22 @@ Dans ce travail pratique,  on discutera les methodes de la prédiction d'une sé
 \section{Introduction}
 Quel sont les lemmas?
 
+En linguistique, les lemmes sont faits de morphèmes. A lemma is the canonical form of a set of words. For example, 'found, finds, find' are forms of the word find as the lemma. As for the words like 'is, are, was, ...' are the forms of the lemma 'be'.
+
 \section{Analyse des données}
 
 \subsection{La relation parmi les train, test et validation données}
 
+We use Training set to train the classifier machine, Then we need to apply our classifier machine on Dev-Test to avoid overfitting situation. But why there is one saying that Naive Bayes classifiers considered relatively immune to overfitting? We still need to find more information.
+
+After having our classifier machine, we can use it to predict with input. In our case, that means we can use the classifier model to predict the form for word with the input - lemma. After getting the predicted word, then we can compare with the data in Test set, and get the accuracy for our classifier model/machine.
+
 \subsection{La statistique}
 
 \subsection{Réduire les bruits}
-
+Handling the special chacaters, I think it should be some kinds of reduce noise.
 \subsection{Baseline}
-Si on faisait rien, combien de précision de prédiction a-t-on gagné?
+Si on faisait rien, combien de précision de prédiction a-t-on gagné? Less than 0.5 with 1500 slices pairs for training set and 500 pairs for test set.
 
 \section{Outil}
 \subsection{Traitement}
@@ -59,7 +65,11 @@ Si on faisait rien, combien de précision de prédiction a-t-on gagné?
 \end{itemize}
 
 \section{Fondations de l’Algorithme}
-\subsection{Structure de phrase et Parseur }
+\subsection{N-gram}
+Je ne veut pas enlever la ponctuation maintenant. Comme je crois que ils aident la prédiction.  Par example:
+- bigram = ('', 'the')       The : the    =  19142.1 : 1.0
+Si le mot avant "the" est ""(blank), puis "the" sera "The" avec t en majuscule. Parce que c'est normalement le debut d'une phrase.
+
 \subsection{Probabilité Modèle}
 \subsubsection{Naïve Bayes}
 $ P(A \mid B) = \frac{P(B \mid A) \, P(A)}{P(B)} $
