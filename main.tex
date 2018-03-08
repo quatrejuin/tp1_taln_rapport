@@ -35,7 +35,15 @@ En linguistique, les lemmes sont faits de morphèmes. A lemma is the canonical f
 
 We use Training set to train the classifier machine, Then we need to apply our classifier machine on Dev-Test to avoid overfitting situation. But why there is one saying that Naive Bayes classifiers considered relatively immune to overfitting? We still need to find more information.
 
+\begin{center}
+\includegraphics[width=0.8\textwidth]{process_flow.png}
+\end{center}
+
 After having our classifier machine, we can use it to predict with input. In our case, that means we can use the classifier model to predict the form for word with the input - lemma. After getting the predicted word, then we can compare with the data in Test set, and get the accuracy for our classifier model/machine.
+
+\begin{center}
+\includegraphics[width=0.8\textwidth]{Corpus.png}
+\end{center}
 
 \subsection{La statistique}
 
@@ -70,6 +78,19 @@ Less than 0.5 with 1500 slices pairs for training set and 500 pairs for test set
 Je ne veut pas enlever la ponctuation maintenant. Comme je crois que ils aident la prédiction.  Par example:
 - bigram = ('', 'the')       The : the    =  19142.1 : 1.0
 Si le mot avant "the" est ""(blank), puis "the" sera "The" avec t en majuscule. Parce que c'est normalement le debut d'une phrase.
+
+\textcolor{red}{Why we consider N-gram?}
+
+These words are not independent, if we need to consider all the hypotaxis between these words, we consider to use Markov model to get the probability for the sentence: $P(s)=\prod\limits_{i=1}^{n}P(w_i|w_1...w_{i-1})$
+
+\href{https://en.wikipedia.org/wiki/Markov_chain}{Markov chain}: A Markov chain is "a stochastic model describing a sequence of possible events in which the probability of each event depends only on the state attained in the previous event."
+
+An n-gram model is an expended Markov model, for our case, it means the form for current word, it depends by previous n words. if n = 1, then the form depends by previous word, if n = 2, it's depends by previous 2 words, if n-gram, then we use this one to get the probability for the sentense: $P(s)=\prod\limits_{i=1}^{n}P(w_i|w_{i-n+1},...,w_{i-1})$
+
+
+n = 1(unigram): $P(s)=\prod\limits_{i}P(w_i)$, e.g. $P(x_1,x_2,...,x_10) = P(x_1)P(x_2)...P(x_{10})$
+
+n = 2(bigram): $P(s)=\prod\limits_{i}P(w_i|w_{i-1})$, e.g. $P(x_1,x_2,...,x_10) = P(x_1)P(x_2|x_1)P(x_3|x_2)...P(x_{10}|x_9)$
 
 \subsection{Probabilité Modèle}
 \subsubsection{Naïve Bayes}
