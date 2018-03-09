@@ -15,7 +15,7 @@
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 
 \title{IFT6285 TP}
-\author{Jeanne, Esdras and Jason WU}
+\author{Jeanne, Jason WU}
 
 \begin{document}
 \maketitle
@@ -51,7 +51,7 @@ After having our classifier machine, we can use it to predict with input. In our
 Handling the special chacaters, I think it should be some kinds of reduce noise.
 \subsection{Baseline}
 Si on faisait rien, combien de précision de prédiction a-t-on gagné? 
-Less than 0.5 with 1500 slices pairs for training set and 500 pairs for test set.
+Less than 0.5 with 1500 sl	ices pairs for training set and 500 pairs for test set.
 
 \section{Outil}
 \subsection{Traitement}
@@ -79,7 +79,7 @@ Je ne veut pas enlever la ponctuation maintenant. Comme je crois que ils aident 
 - bigram = ('', 'the')       The : the    =  19142.1 : 1.0
 Si le mot avant "the" est ""(blank), puis "the" sera "The" avec t en majuscule. Parce que c'est normalement le debut d'une phrase.
 
-\textcolor{red}{Why we consider N-gram?}
+\textcolor{red}{Why we consider N-gram? I think for our case, we only use Naive Bayes, not about the N-gram. We extract our feature with bi-words or n-words.}
 
 These words are not independent, if we need to consider all the hypotaxis between these words, we consider to use Markov model to get the probability for the sentence: $P(s)=\prod\limits_{i=1}^{n}P(w_i|w_1...w_{i-1})$
 
@@ -87,16 +87,26 @@ These words are not independent, if we need to consider all the hypotaxis betwee
 
 An n-gram model is an expended Markov model, for our case, it means the form for current word, it depends by previous n words. if n = 1, then the form depends by previous word, if n = 2, it's depends by previous 2 words, if n-gram, then we use this one to get the probability for the sentense: $P(s)=\prod\limits_{i=1}^{n}P(w_i|w_{i-n+1},...,w_{i-1})$
 
+n = 1(unigram): $P(s)=\prod\limits_{i}P(w_i)$, e.g. $P(x_1,x_2,...,x_{10}) = P(x_1)P(x_2)...P(x_{10})$
 
-n = 1(unigram): $P(s)=\prod\limits_{i}P(w_i)$, e.g. $P(x_1,x_2,...,x_10) = P(x_1)P(x_2)...P(x_{10})$
+n = 2(bigram): $P(s)=\prod\limits_{i}P(w_i|w_{i-1})$, e.g. $P(x_1,x_2,...,x_{10}) = P(x_1)P(x_2|x_1)P(x_3|x_2)...P(x_{10}|x_9)$
 
-n = 2(bigram): $P(s)=\prod\limits_{i}P(w_i|w_{i-1})$, e.g. $P(x_1,x_2,...,x_10) = P(x_1)P(x_2|x_1)P(x_3|x_2)...P(x_{10}|x_9)$
+For our case, we predict the sentense, for example: 
+s = "Year 208 BC was a year of the pre-Julian Roman calendar." 
+That is P(s) = P(Year)P(208|Year)P(BC|208)...P(calendar|Roman)P(.|calendar)
+
+So N-gram helps to predict the sentence.
 
 \subsection{Probabilité Modèle}
 \subsubsection{Naïve Bayes}
 $ P(A \mid B) = \frac{P(B \mid A) \, P(A)}{P(B)} $
 
+How to predict
+
+\textcolor{red}{How to use smoothing?}
 { Nos variables aléatoires sont discrètes. -> MultiNomial Naive Bayes -> Smoothing}
+
+\textcolor{red}{Is that possible overfit if using Naive Bayes?}
 
 \subsubsection{Modèles de Markov cachée HMM}
 \begin{itemize}
