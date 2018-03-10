@@ -111,6 +111,28 @@ How to predict
 \subsubsection{Modèles de Markov cachée HMM}
 \begin{itemize}
 \item Théorie
+
+The HMM is an extension to the Markov chain.
+
+A HMM can be characterised by:
+\begin{itemize}
+\item the output observation alphabet. This is the set of symbols which may be observed as output of the system.
+\item the set of states.
+\item the transition probabilities $a_{ij} = P(s_t = j | s_{t-1} = i)$. These represent the probability of transition to each state from a given state.
+\item the output probability matrix $b_i(k) = P(X_t = o_k | s_t = i)$. These represent the probability of observing each symbol in a given state.
+\item the initial state distribution. This gives the probability of starting in each state.
+\end{itemize}
+
+The output observation alphabet is the set of word forms (the lexicon), and the 
+remaining three parameters are derived by a training regime.
+
+HMM regards to the optimal combination of tags for a larger unit, such as a sentence.
+
+Viterbi algorithm, which efficiently computes the optimal path through the graph given the sequence of words forms.
+
+The most difficult task with the model, and requires either MLE estimates of the parameters or unsupervised learning using the Baum-Welch algorithm, a variant of EM.
+
+
 \item Lier les séquences aux états
 \item Lissage
 \item Apprentissage des paramètres
