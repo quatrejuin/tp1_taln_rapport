@@ -14,6 +14,34 @@
 \usepackage[colorinlistoftodos]{todonotes}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 
+%% Use Apacite
+\usepackage{apacite}
+
+%% For Source code
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
 \title{IFT6285 TP}
 \author{Jeanne, Jason WU}
 
@@ -59,7 +87,7 @@ Less than 0.5 with 1500 sl	ices pairs for training set and 500 pairs for test se
 \begin{itemize}
 \item Modèles entraîné ou pas?
 \item La vitesse
-\item NLTK vs. spaCy \cite{noauthor_nltk_2016} Selon https://blog.thedataincubator.com/2016/04/nltk-vs-spacy-natural-language-processing-in-python/, spaCy est 20 fois plus vite que NLTK sur le travail de POS.
+\item NLTK vs. spaCy  Selon https://blog.thedataincubator.com/2016/04/nltk-vs-spacy-natural-language-processing-in-python/, spaCy est 20 fois plus vite que NLTK sur le travail de POS.
 \end{itemize}
 \subsubsection{NLTK}
 \begin{enumerate}
@@ -74,12 +102,10 @@ Less than 0.5 with 1500 sl	ices pairs for training set and 500 pairs for test se
 \end{itemize}
 
 \section{Fondations de l’Algorithme}
-\subsection{N-gram}
+\subsection{N-gram model}
 Je ne veut pas enlever la ponctuation maintenant. Comme je crois que ils aident la prédiction.  Par example:
 - bigram = ('', 'the')       The : the    =  19142.1 : 1.0
 Si le mot avant "the" est ""(blank), puis "the" sera "The" avec t en majuscule. Parce que c'est normalement le debut d'une phrase.
-
-\textcolor{red}{Why we consider N-gram? I think for our case, we only use Naive Bayes, not about the N-gram. We extract our feature with bi-words or n-words.}
 
 These words are not independent, if we need to consider all the hypotaxis between these words, we consider to use Markov model to get the probability for the sentence: $P(s)=\prod\limits_{i=1}^{n}P(w_i|w_1...w_{i-1})$
 
@@ -97,11 +123,89 @@ That is P(s) = P(Year)P(208|Year)P(BC|208)...P(calendar|Roman)P(.|calendar)
 
 So N-gram helps to predict the sentence.
 
-\subsection{Probabilité Modèle}
-\subsubsection{Naïve Bayes}
-$ P(A \mid B) = \frac{P(B \mid A) \, P(A)}{P(B)} $
+NLTK:
+\begin{lstlisting}
+class nltk.model.ngram.NgramModel(n, train, pad_left=True, pad_right=False, estimator=None, *estimator_args, **estimator_kwargs)[source]
+\end{lstlisting}
 
-How to predict
+\subsection{Probability Model}
+\subsubsection{Naive Bayes}
+Naive Bayes is a classification technique based on Bayes' theorem with independence assumption.  given a problem instance to be classified, represented by a vector ${\mathbf  {x}}=(x_{1},\dots ,x_{n})$ representing some n features (independent variables), it assigns to this instance probabilities for each of K possible outcomes or classes $C_{k}$. \cite{murty_pattern_2011}
+
+\[p(C_{k}\mid x_{1},\dots ,x_{n})={\frac {1}{Z}}p(C_{k})\prod _{i=1}^{n}p(x_{i}\mid C_{k})\]
+
+With the the "naive" conditional independence assume that each feature $x_{i}$ is conditionally independent of every other feature $x_{j}$ for $j \neq i$, given the category. 
+
+The prediction lemma-form problem, For Any given lemma $l_i$ we suppose that there is a form list $Forms(l_i)=\{f_{i1},f_{i2},...,f_{ik}\}$ which contains all its possible forms. The lemmas sequence $(l_1,l_2,...,l_n)$ are the sequence we can observe, so we take them as features. Then the form sequence is the classes that we want to put the features in\footnote{We will probably use both "label" or "class","tag" or "classify" in this notes, they will mean same thing.}. Actually,in this way,  we built up a label list contains all the forms show up in the corpus $\{Forms(l_1),Forms(l_2),..., Forms(l_n)\}$, the size of this list will be $V$, which is the total vocabulary of the forms in the corpus. Unfortunately, due to the immense of the vocabulary, the conditional probabilities table will be infeasible.
+
+\[p(V|l_1,...,l_n) = \frac{1}{Z} p(V) \prod _{i=1}^{n}p(l_i \mid V) \]
+
+Actually when we do predicting for the lemma $l_i$ in a sequence $(l_1,l_2,...,l_n)$, we just need to look at $Forms(l_i)$ and don't have to take account the $Forms(l_j)$ ($j \neq i$). In this section, We see the prediction of form for each lemma $l_i  \Longrightarrow f_i$ as a classification by choosing the labels only from $Forms(l_i)$. It's reasonable since the lemma is kind of the product of the lemmalization of the correspond forms $\{f_{i1},f_{i2},...,f_{ik}\}$. The one feature NB model correspond to our problem is like:
+
+\[p(f_i|l_i) \propto p(f_i) \cdot  p(l_i|f_i)\]
+
+Thus we apply the Naive Bayes Model to our lemma-form prediction. Express our idea using Bayesian probability terminology:
+
+\begin{align*}
+posterior  &= \frac{prior \times likelihood}{evidence} \\
+           &\propto  prior \times likelihood \\
+\end{align*}
+When we compare the probability of different form for lemma $l_i$, we are comparing the $p(f_i|l_i)$, posteriors  of lemma $l_i$ predicted as form $f_i$. It depends on the prior of the form $f_i$ and the likelihood of the lemma $l_i$ when form $f_i$ shows.
+\begin{equation}
+\frac{p(f_i|l_i)}{p(f_j|l_i)} = \frac{p(f_i) \cdot p(l_i \mid f_i)}{  p(f_j) \cdot p(l_i \mid f_j) } \qquad \qquad  f_i,f_j \in Forms(l_i)
+\end{equation}
+And $p(f_i) \cdot p(l_i \mid f_i)$ can even be simplified if we apply the MLE estimator $\frac{f}{n}$ to it.
+\begin{equation} 
+\label{eq:simple_mle}
+\begin{aligned}
+\hat{p}(f_i) \cdot \hat{p}(l_i \mid f_i) &= \frac{freq(f_i)}{n} \cdot \frac{freq(l_i, f_i)}{freq(f_i)} \\
+&= \frac{freq(l_i, f_i)}{n}
+\end{aligned}
+\end{equation}
+
+The equation \ref{eq:simple_mle} is a simple theoretical model. It maybe a little astonishing that,based on this model, if we want to compare $p(f_i|l_i)$ and $p(f_j|l_i)$, just need to compare the co-occurrence $freq(l_i,f_i)$ and $freq(l_i,f_j)$.  The comparison to the real using model will be given later on. 
+
+And since one time training will prepare the parameters for the prediction for one lemma, if the train set contains $n$ different lemmas, then the model will be trained $n$ times. Nevertheless the same lemma will share the same parameters. So we use a dictionary to store them to avoid the the repetition work.
+
+
+
+Take the lemma "find" in file <dev-24> as an example. The first 90\% of the file is taken as the train set (N=1576467). Table \ref{tb:cfd_find} shows the conditional frequency of the forms of "find" in the train set. It means $freq(lemma="find",form="found")=778$, $freq(lemma="find",form="find")=204$ etc.
+
+\begin{table}[htb]
+\centering
+\begin{tabular}{|l|llllll|}
+\hline
+form $f_i$       & found & find & finds & finding & Finding & Finds \\ \hline
+freq($f_i$,"find") & 778   & 204  & 65    & 32      & 4       & 2     \\ \hline
+freq($f_i$) & 778   & 204  & 65    & 45      & 4       & 2     \\ \hline
+\end{tabular}
+\caption{conditional frequency of the forms of "find"}
+\label{tb:cfd_find}
+\end{table}
+
+
+Although we don't event need to use the $freq(f_i)$ in our current model, it's for the future use.
+
+Suppose our one feature NB model is classifying the lemma "find", the only feature is \{lemma:"find"\} and the classes to be chosen from are \{found, find, finds, finding, Finding, Finds\}. The model will compare the max $p(f_i|l_i)$ and do the classification. No doubt, $p("found" | lemma:"find")$ is the max, thus the classes will always be form "found". We call this unigram. Because this model just has one feature and only the $l_i$ will affect the classes $f_i$.
+
+The bigram model we built is taking account the influence of the $l_{i-1}$ to $f_i$.
+\begin{align}
+p(f_i|l_{i-1},l_i) &\propto p(f_i) \cdot  p(l_{i-1},l_i|f_i) \label{eq:bigram_nb} \\
+&= p(f_i) \cdot  p(l_{i-1}|f_i) \cdot p( l_i | l_{i-1},f_i) \\
+&= p(f_i) \cdot  p(l_{i-1}|f_i) \cdot p( l_i | f_i) \\
+&\propto freq(l_{i-1},l_i,f_i) \label{eq:mle_bi_nb}
+\end{align}
+\todo{ $freq(l_{i-1},l_i,f_i)$ should be removed, but why?}
+Apply the same MLE estimator $\frac{f}{n}$ to get from equation \ref{eq:bigram_nb} to \ref{eq:mle_bi_nb} .
+
+Additionally, we assume that for two lemmas $l_i$ and $l_{i+1}$, the prediction form $f_{i}$ is independent of every other $f_{j}$ for $j \neq i$.
+
+p()
+
+
+Obviously, it's not realistic. For example, the lemma series "student be", if the "student" is predicted as "students", then the "be" should be either "are" or "were". 
+
+
 
 \textcolor{red}{How to use smoothing?}
 { Nos variables aléatoires sont discrètes. -> MultiNomial Naive Bayes -> Smoothing}
@@ -113,6 +217,8 @@ How to predict
 \item Théorie
 
 The HMM is an extension to the Markov chain.
+
+
 
 A HMM can be characterised by:
 \begin{itemize}
@@ -146,11 +252,22 @@ The most difficult task with the model, and requires either MLE estimates of the
 \subsection{Label bias problem}
 
 \section{Related work}
+Compare
+\begin{lstlisting}
+labeled_features_1a = [({"lemma":"the"},'the'), ({"lemma":'be'},'is'), ({"lemma":'be'},'is'), ({"lemma":'be'},'was')]
+labeled_features_1b = [({'the':True},'the'), ({'be':True},'is'), ({'be':True},'is'), ({'be':True},'was')]
+\end{lstlisting}
+
+\begin{lstlisting}
+labeled_features_2a = [({"lemma":"do"},'do'), ({"lemma":"the"},'the'), ({"lemma":'be'},'is'), ({"lemma":'be'},'is'), ({"lemma":'be'},'was')]
+labeled_features_2b = [({'do':True},'do'), ({'the':True},'the'), ({'be':True},'is'), ({'be':True},'is'), ({'be':True},'was')]
+\end{lstlisting}
+
 \section{Discussion}
 \section{Résumé}
 \cite{greenwade93}
 
 
-\bibliographystyle{alpha}
-\bibliography{bib_jason,sample}
+\bibliographystyle{apacite}
+\bibliography{jason,sample}
 \end{document}
