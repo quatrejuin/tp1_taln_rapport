@@ -184,7 +184,7 @@ freq($f_i$) & 778   & 204  & 65    & 45      & 4       & 2     \\ \hline
 \end{table}
 
 
-Although we don't event need to use the $freq(f_i)$ in our current model, it's for the future use.
+Although we don't even need to use the $freq(f_i)$ in our current model, it's for the future use.
 
 Suppose our one feature NB model is classifying the lemma "find", the only feature is \{lemma:"find"\} and the classes to be chosen from are \{found, find, finds, finding, Finding, Finds\}. The model will compare the max $p(f_i|l_i)$ and do the classification. No doubt, $p("found" | lemma:"find")$ is the max, thus the classes will always be form "found". We call this unigram. Because this model just has one feature and only the $l_i$ will affect the classes $f_i$.
 
