@@ -53,27 +53,44 @@ Dans ce travail pratique,  on discutera les methodes de la prédiction d'une sé
 \end{abstract}
 
 \section{Introduction}
-Quel sont les lemmas?
+What's our purpose?
 
-En linguistique, les lemmes sont faits de morphèmes. A lemma is the canonical form of a set of words. For example, 'found, finds, find' are forms of the word find as the lemma. As for the words like 'is, are, was, ...' are the forms of the lemma 'be'.
+We are providing the samples with two lines of words, the words linked to a sentence. one line is the word with the tense, another line the lemma of the word. A lemma is the canonical form of a set of words. For example, 'found, finds, find' are words with tense of the word 'find' as the lemma.
 
-\section{Analyse des données}
+We should implement a system to predict the pattern sequences by dealing with lemma sequences. What we would like to know is the accuracy of using our prediction system for predicting and try to improve the accuracy rate with kinds of different methods. Obviously, our purpose is trying to increase the true\_positive rate. 
 
-\subsection{La relation parmi les train, test et validation données}
+Accuracy = $\frac{true\_positive}{true\_positive + false\_positive}$ = $\frac{\#true\_positive}{\#total\_words}$
 
-We use Training set to train the classifier machine, Then we need to apply our classifier machine on Dev-Test to avoid overfitting situation. But why there is one saying that Naive Bayes classifiers considered relatively immune to overfitting? We still need to find more information.
+\section{Analyst the data}
 
+\subsection{The characteristics of the data}
+The data in three sets are contains of English language, they are extracted from wikipedia and is encoded in utf-8. It comes from totally 2020 slices of 1000 articles. The article is represented by a succession of lines, and a line represents a word with the format(form,tab,lemma), each sentence is marked with an empty line. We can get below characteristics according to this information:
+\begin{itemize}
+\item English language
+\item Encoded in utf-8
+\item There is connection between words because the words compose a sentence
+\item There is a mapping relation between form and lemma
+\item Take word as an unit, lemma can be treated as the input, and the form as label
 \begin{center}
 \includegraphics[width=0.8\textwidth]{process_flow.png}
 \end{center}
+\item Take sentence as a whole object, the sentence which is formed by lemmas and it can be taken as an observation sequence, and the sentence formed by forms as state sequence
 
-After having our classifier machine, we can use it to predict with input. In our case, that means we can use the classifier model to predict the form for word with the input - lemma. After getting the predicted word, then we can compare with the data in Test set, and get the accuracy for our classifier model/machine.
+
+\end{itemize}
+
+\subsection{The relation between Training set, Dev-Test Set and Test Set}
+
+We would use the training set to train our feature-based model, Then we can apply our model on dev-test set to optimize our model in case we are using  parameters overmuch due to overfitting.
+
+After having our classifier model, we can use it to predict with input. In our case, that means we can use the classifier model to predict the form with lemma of the word. After getting the predicted word, then we can compare with the data in test set, if the predicted label is matched with and form in test set, true\_positive increase by 1, if it isn't matched, true\_positive keeps the same value, after comparing all the words, we can calculate the accuracy for our classifier model. \todo{During the development, we always use the a part of dev data then split it by the 9:1 to training data and test can be mentioned here.}
 
 \begin{center}
 \includegraphics[width=0.8\textwidth]{Corpus.png}
 \end{center}
 
-\subsection{La statistique}
+\subsection{The statistic}
+
 
 \subsection{Réduire les bruits}
 Handling the special chacaters, I think it should be some kinds of reduce noise.
@@ -128,8 +145,7 @@ NLTK:
 class nltk.model.ngram.NgramModel(n, train, pad_left=True, pad_right=False, estimator=None, *estimator_args, **estimator_kwargs)[source]
 \end{lstlisting}
 
-\subsection{Probability Model}
-\subsubsection{Naive Bayes}
+\subsection{Naive Bayes}
 Naive Bayes is a classification technique based on Bayes' theorem with independence assumption.  given a problem instance to be classified, represented by a vector ${\mathbf  {x}}=(x_{1},\dots ,x_{n})$ representing some n features (independent variables), it assigns to this instance probabilities for each of K possible outcomes or classes $C_{k}$. \cite{murty_pattern_2011}
 
 \[p(C_{k}\mid x_{1},\dots ,x_{n})={\frac {1}{Z}}p(C_{k})\prod _{i=1}^{n}p(x_{i}\mid C_{k})\]
@@ -144,7 +160,7 @@ Actually when we do predicting for the lemma $l_i$ in a sequence $(l_1,l_2,...,l
 
 \[p(f_i|l_i) \propto p(f_i) \cdot  p(l_i|f_i)\]
 
-Thus we apply the Naive Bayes Model to our lemma-form prediction. Express our idea using Bayesian probability terminology:
+Thus we apply the Naive Bayes Model to our lemma-form prediction. Express our idea using Bayesian probability terminology:\todo{If the essay is too long, delete here.}
 
 \begin{align*}
 posterior  &= \frac{prior \times likelihood}{evidence} \\
@@ -163,13 +179,13 @@ And $p(f_i) \cdot p(l_i \mid f_i)$ can even be simplified if we apply the MLE es
 \end{aligned}
 \end{equation}
 
-The equation \ref{eq:simple_mle} is a simple theoretical model. It maybe a little astonishing that,based on this model, if we want to compare $p(f_i|l_i)$ and $p(f_j|l_i)$, just need to compare the co-occurrence $freq(l_i,f_i)$ and $freq(l_i,f_j)$.  The comparison to the real using model will be given later on. 
+The equation \ref{eq:simple_mle} is a simple theoretical model. It maybe a little astonishing that,based on this model, if we want to compare $p(f_i|l_i)$ and $p(f_j|l_i)$, just need to compare the co-occurrence $freq(l_i,f_i)$ and $freq(l_i,f_j)$.  The problem is we can't deal with those lemmas we haven't seen. Since we use NLTK package, the smooth method of NLTK will be given later on. 
 
 And since one time training will prepare the parameters for the prediction for one lemma, if the train set contains $n$ different lemmas, then the model will be trained $n$ times. Nevertheless the same lemma will share the same parameters. So we use a dictionary to store them to avoid the the repetition work.
 
 
-
-Take the lemma "find" in file <dev-24> as an example. The first 90\% of the file is taken as the train set (N=1576467). Table \ref{tb:cfd_find} shows the conditional frequency of the forms of "find" in the train set. It means $freq(lemma="find",form="found")=778$, $freq(lemma="find",form="find")=204$ etc.
+\todo{Should be moved after the smooth part}
+Take the lemma "find" in file <dev-24> as an example. The first 90\% of the file is taken as the train set (N=1576467). Table \ref{tb:cfd_find} shows the conditional frequency of the forms of "find" in the train set. It means $freq(lemma="find", form="found")=778$, $freq(lemma="find",form="find")=204$ etc.
 
 \begin{table}[htb]
 \centering
@@ -183,27 +199,45 @@ freq($f_i$) & 778   & 204  & 65    & 45      & 4       & 2     \\ \hline
 \label{tb:cfd_find}
 \end{table}
 
-
 Although we don't even need to use the $freq(f_i)$ in our current model, it's for the future use.
 
-Suppose our one feature NB model is classifying the lemma "find", the only feature is \{lemma:"find"\} and the classes to be chosen from are \{found, find, finds, finding, Finding, Finds\}. The model will compare the max $p(f_i|l_i)$ and do the classification. No doubt, $p("found" | lemma:"find")$ is the max, thus the classes will always be form "found". We call this unigram. Because this model just has one feature and only the $l_i$ will affect the classes $f_i$.
+Suppose our one feature NB model is classifying the lemma "find", the only feature is \{"lemma":"find"\}\footnote{In fact, the final format of feature we use is \{"find":True\}} and the classes to be chosen from are \{found, find, finds, finding, Finding, Finds\}. The model will compare the max $p(f_i|l_i)$ and do the classification. No doubt, $p("found" | lemma="find")$ is the max, thus the classes will always be form "found". We call this unigram. Because this model just has one feature and only the $l_i$ will affect the classes $f_i$. 
 
 The bigram model we built is taking account the influence of the $l_{i-1}$ to $f_i$.
 \begin{align}
-p(f_i|l_{i-1},l_i) &\propto p(f_i) \cdot  p(l_{i-1},l_i|f_i) \label{eq:bigram_nb} \\
-&= p(f_i) \cdot  p(l_{i-1}|f_i) \cdot p( l_i | l_{i-1},f_i) \\
-&= p(f_i) \cdot  p(l_{i-1}|f_i) \cdot p( l_i | f_i) \\
-&\propto freq(l_{i-1},l_i,f_i) \label{eq:mle_bi_nb}
+p(f_i|l_{i-1},l_i) &\propto p(f_i) \cdot  p(l_{i-1},l_i|f_i)  \\
+&= p(f_i) \cdot  p(l_{i-1}|f_i) \cdot p( l_i | l_{i-1},f_i) \label{eq:bigram_mod} \\
+&= p(f_i) \cdot  p(l_{i-1}|f_i) \cdot p( l_i | f_i) \label{eq:bigram_nb}
 \end{align}
-\todo{ $freq(l_{i-1},l_i,f_i)$ should be removed, but why?}
-Apply the same MLE estimator $\frac{f}{n}$ to get from equation \ref{eq:bigram_nb} to \ref{eq:mle_bi_nb} .
 
-Additionally, we assume that for two lemmas $l_i$ and $l_{i+1}$, the prediction form $f_{i}$ is independent of every other $f_{j}$ for $j \neq i$.
+Apply the Naive Bayes assumption to get from equation \ref{eq:bigram_mod} to \ref{eq:bigram_nb}. And in our case, if we see "to find" to the probability of classifying "find" into "finding"   it would be:
+\begin{equation}
+p(finding | to,find) \propto p(finding)\cdot p(to | finding) \cdot  p(find | finding))
+\end{equation}
+$"finding":form_i \quad "to":lemma_{i-1} \quad "find":lemma_i$
 
-p()
+
+We face the problem then, how can we prepare the feature set to feed the NLTK Naive Bayes model? The feature is \{"lemma-1":"to","lemma":"find" \} or 
+ \{"bigram":("to","find"),"lemma":"find" \}? Or both of them are incorrect? 
+\subsubsection{Smooth method of NLTK Naive Bayes}
+The euation 2 already does its job. But it has a fatal problem. It can't tackle the un-seen lemmas. 
+
+According to the source code of NLTK class NaiveBayesClassifier, it takes Expected Likelihood Estimate method, the probability distribution is given as below:
+\begin{equation}
+p(x_i)=\frac{C+0.5}{N+B/2} \qquad X = \{x_1,x_2,\dots,x_o,\dots\}
+\end{equation}
+
+$C$ is the frequency we count with $N$ outcomes and $B$ the number of the observed value of $X$. As addressed in the comment of the source code:\footnote{\url{http://www.nltk.org/_modules/nltk/probability.html}}
+\begin{quotation}
+This is equivalent to adding 0.5 to the count for each bin, and taking the maximum likelihood estimate of the resulting frequency distribution.
+\end{quotation}
+
+\todo{Compare the ELE and MLE}
+
+\subsubsection{Feature format}
 
 
-Obviously, it's not realistic. For example, the lemma series "student be", if the "student" is predicted as "students", then the "be" should be either "are" or "were". 
+Additionally, we assume that for two lemmas $l_i$ and $l_{i+1}$, the prediction form $f_{i}$ is independent of every other $f_{j}$ for $j \neq i$. Obviously, it's not realistic. For example, the lemma series "student be", if the "student" is predicted as "students", then the "be" should be either "are" or "were". 
 
 
 
@@ -212,7 +246,7 @@ Obviously, it's not realistic. For example, the lemma series "student be", if th
 
 \textcolor{red}{Is that possible overfit if using Naive Bayes?}
 
-\subsubsection{Modèles de Markov cachée HMM}
+\subsection{Modèles de Markov cachée HMM}
 \begin{itemize}
 \item Théorie
 
