@@ -55,9 +55,9 @@ Dans ce travail pratique,  on discutera les methodes de la prédiction d'une sé
 \section{Introduction}
 What's our purpose?
 
-We are providing the samples with two lines of words, the words linked to a sentence. one line is the word with the tense, another line the lemma of the word. A lemma is the canonical form of a set of words. For example, 'found, finds, find' are words with tense of the word 'find' as the lemma.
+We are providing the samples with two lines of words, the words linked to a sentence. one line is the word with the tense, another line is the lemma of the word. A lemma is the canonical form of a set of words. For example, 'found, finds, find' are words with tense of the word 'find' as the lemma.
 
-We should implement a system to predict the pattern sequences by dealing with lemma sequences. What we would like to know is the accuracy of using our prediction system for predicting and try to improve the accuracy rate with kinds of different methods. Obviously, our purpose is trying to increase the true\_positive rate. 
+We should implement a system to predict the pattern sequences by dealing with lemma sequences. We may call this issue as 'form-lemma' mapping issue. We are not just focusing on how to find a solution on solving the mapping issue, What we would like to know is how many classifier models we could take into account, and we would choose which one of them to implement our notion. We would also like to know the accuracy of our prediction system for predicting and we should try to improve the accuracy rate with kinds of different methods.
 
 Accuracy = $\frac{true\_positive}{true\_positive + false\_positive}$ = $\frac{\#true\_positive}{\#total\_words}$
 
@@ -81,9 +81,10 @@ The data in three sets are contains of English language, they are extracted from
 
 \subsection{The relation between Training set, Dev-Test Set and Test Set}
 
-We would use the training set to train our feature-based model, Then we can apply our model on dev-test set to optimize our model in case we are using  parameters overmuch due to overfitting.
+We would use the training set to train our feature-based model, Then we can apply our model on dev-test set to optimize our model in case we are using  parameters overmuch which may cause overfitting.\todo{my understand for the sequence by using the sets may not correct.} We train our model in dev-test set, there is another advantage for this, is the cross validation for better training our model. During our development, we use a part of dev data, and split the data by 9:1 for assigning to training set and test set.
 
-After having our classifier model, we can use it to predict with input. In our case, that means we can use the classifier model to predict the form with lemma of the word. After getting the predicted word, then we can compare with the data in test set, if the predicted label is matched with and form in test set, true\_positive increase by 1, if it isn't matched, true\_positive keeps the same value, after comparing all the words, we can calculate the accuracy for our classifier model. \todo{During the development, we always use the a part of dev data then split it by the 9:1 to training data and test can be mentioned here.}
+After having our classifier model, we can use it to predict with input. In our case, that means we can use the classifier model to predict the form with lemma of the word. After getting the predicted word, then we can compare with the data in test set, if the predicted label is matched with the form in test set, true\_positive increase by 1, if it isn't matched, true\_positive keeps the same value, after comparing all the words, we can calculate the accuracy for our classifier model. 
+
 
 \begin{center}
 \includegraphics[width=0.8\textwidth]{Corpus.png}
@@ -91,6 +92,14 @@ After having our classifier model, we can use it to predict with input. In our c
 
 \subsection{The statistic}
 
+There are two different methods to process language problem. One is building the system by rules, another is based on statistic.
+
+If we implement our system based on rules. First step is performing lexical analyst, then parser the sentence and analyst syntax, after execute semantic parsing, the last is context analyst. So if we would like to predict the form, the processing is inverse. 
+
+For example, we need to predict form of the word 'become' in our sentence which contains by lemmas: "a standardized version of the game eventually become know as bagatelle."
+First we need to know the grammatical tense according to the context, if it's past tense, then we analyst semantic meaning, then parser and perform lexical analysis, at last we should know the form of the word 'become' is mapping to 'became'.
+
+Another method is by mathematic statistical processing. We build the mathematic model to learn the feature or rule for the problem. We can choose different statistic methods like Naive Bayes, HMM, or machine learning to train our model. By using statistic method, we calculate the probability of the form by the model, then we choose the highest probability as the predict result. 
 
 \subsection{Réduire les bruits}
 Handling the special chacaters, I think it should be some kinds of reduce noise.
