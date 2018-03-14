@@ -101,16 +101,37 @@ First we need to know the grammatical tense according to the context, if it's pa
 
 Another method is by mathematic statistical processing. We build the mathematic model to learn the feature or rule for the problem. We can choose different statistic methods like Naive Bayes, HMM, or machine learning to train our model. By using statistic method, we calculate the probability of the form by the model, then we choose the highest probability as the predict result. 
 
-\subsection{Réduire les bruits}
+\subsection{Reduce the noise}
 Noise is an unavoidable problem, and it is the first step we have to deal with them. Because it will affect the data preparation processes in our development and cause errors due to the predict result less accurate.
-Analyst the data and we found that there is one kind of noise in them. We think they 
+Analyst the data and we found that there is one kind of noise in them. We think they may introduced by encoding problem. When the data is encoded by utf-8, after decoding them, there is lots of messy meta in these data. \todo{Please explain the solution on this problem}
+
+\includegraphics[width=1\textwidth]{noise1.png}
+
+\includegraphics[width=1\textwidth]{noise2.png}
 
 \subsection{Baseline}
-Si on faisait rien, combien de précision de prédiction a-t-on gagné? 
-Less than 0.5 with 1500 sl	ices pairs for training set and 500 pairs for test set.
+Si on faisait rien, combien de précision de prédiction a-t-on gagné? \todo{Not sure if we still need to keep this part}
 
-\section{Outil}
+\section{Tool to implement our idea}
 \subsection{Traitement}
+There are some open source tools for handling Natural Language process, we compared some of them and finally decided to use NLTK in Python because of the program language and the mathematic statistic models it contains. 
+We list some features of these open source tools for the future needs in case:
+\href{https://stanfordnlp.github.io/CoreNLP/}{Stanford\'s CoreNLP:} linguistic analysis tools, Java
+\href{http://textblob.readthedocs.io/en/dev/}{TextBlob:} Word inflection and lemmatization, Java
+NLTK: Naive Bayes, HMM, N-gram Tagger + Python
+\href{SpaCy: 13 statistical models, deep learning + Python
+Apache Lucene and Solr
+Apache OpenNLP
+GATE and Apache UIMA 
+Gensim
+
+CST's lemmatiser: base on Brills rules (C++)
+MorphAdorner: multi (Java)
+Specialist NLP Tools Norm：dTagger (Java)
+Stanford CoreNLP：ME (Java)
+NLTK: base on HMM, Trigram Tagger、N-gram Tagger (Python)
+SpaCy: (Python)
+
 \subsubsection{Comparison parmi NLTK, TextBlob, Stanford CoreNLP, SpaCy and Gensim}
 \begin{itemize}
 \item Modèles entraîné ou pas?
