@@ -57,7 +57,7 @@ What's our purpose?
 
 We are providing the samples with two lines of words, the words linked to a sentence. one line is the word with the tense, another line is the lemma of the word. A lemma is the canonical form of a set of words. For example, 'found, finds, find' are words with tense of the word 'find' as the lemma.
 
-We should implement a system to predict the pattern sequences by dealing with lemma sequences. We may call this issue as 'form-lemma' mapping issue. We are not just focusing on how to find a solution on solving the mapping issue, What we would like to know is how many classifier models we could take into account, and we would choose which one of them to implement our notion. We would also like to know the accuracy of our prediction system for predicting and we should try to improve the accuracy rate with kinds of different methods.
+We should implement a system to predict the pattern sequences by dealing with lemma sequences. We may call this issue as 'lemma-form' mapping problem. We are not just focusing on how to find a solution on solving the mapping issue, What we would like to know is how many classifier models we could take into account, and we would choose which one of them to implement our notion. We would also like to know the accuracy of our prediction system for predicting and we should try to improve the accuracy rate with kinds of different methods.
 
 Accuracy = $\frac{true\_positive}{true\_positive + false\_positive}$ = $\frac{\#true\_positive}{\#total\_words}$
 
@@ -85,14 +85,14 @@ We would use the training set to train our feature-based model, Then we can appl
 
 After having our classifier model, we can use it to predict with input. In our case, that means we can use the classifier model to predict the form with lemma of the word. After getting the predicted word, then we can compare with the data in test set, if the predicted label is matched with the form in test set, true\_positive increase by 1, if it isn't matched, true\_positive keeps the same value, after comparing all the words, we can calculate the accuracy for our classifier model. 
 
-
+\todo{Don't forget to cite.}
 \begin{center}
 \includegraphics[width=0.8\textwidth]{Corpus.png}
 \end{center}
 
 \subsection{The statistic}
 
-There are two different methods to process language problem. One is building the system by rules, another is based on statistic.
+There are two methods to process language problem. One is building the system by rules, another is based on statistic.
 
 If we implement our system based on rules. First step is performing lexical analyst, then parser the sentence and analyst syntax, after execute semantic parsing, the last is context analyst. So if we would like to predict the form, the processing is inverse. 
 
@@ -105,45 +105,60 @@ Another method is by mathematic statistical processing. We build the mathematic 
 Noise is an unavoidable problem, and it is the first step we have to deal with them. Because it will affect the data preparation processes in our development and cause errors due to the predict result less accurate.
 Analyst the data and we found that there is one kind of noise in them. We think they may introduced by encoding problem. When the data is encoded by utf-8, after decoding them, there is lots of messy meta in these data. \todo{Please explain the solution on this problem}
 
+\begin{center}
 \includegraphics[width=1\textwidth]{noise1.png}
 
+\end{center}
+
+\begin{center}
+
 \includegraphics[width=1\textwidth]{noise2.png}
+\end{center}
 
 \subsection{Baseline}
 Si on faisait rien, combien de précision de prédiction a-t-on gagné? \todo{Not sure if we still need to keep this part}
 
-\section{Tool to implement our idea}
-\subsection{Traitement}
-There are some open source tools for handling Natural Language process, we compared some of them and finally decided to use NLTK in Python because of the program language and the mathematic statistic models it contains. 
+\section{Tool we use to implement our idea}
+\subsection{Open source tools}
+There are some open source tools for handling Natural Language process, we compared some of them and then we choose to use NLTK in Python because of the program language and the powerful modules it contains. 
+
 We list some features of these open source tools for the future needs in case:
+
 \href{https://stanfordnlp.github.io/CoreNLP/}{Stanford\'s CoreNLP:} linguistic analysis tools, Java
+
 \href{http://textblob.readthedocs.io/en/dev/}{TextBlob:} Word inflection and lemmatization, Java
-NLTK: Naive Bayes, HMM, N-gram Tagger + Python
-\href{SpaCy: 13 statistical models, deep learning + Python
-Apache Lucene and Solr
-Apache OpenNLP
-GATE and Apache UIMA 
-Gensim
 
-CST's lemmatiser: base on Brills rules (C++)
-MorphAdorner: multi (Java)
-Specialist NLP Tools Norm：dTagger (Java)
-Stanford CoreNLP：ME (Java)
-NLTK: base on HMM, Trigram Tagger、N-gram Tagger (Python)
-SpaCy: (Python)
+\href{https://www.nltk.org/}{NLTK:} Naive Bayes, HMM, N-gram Tagger, Python
 
-\subsubsection{Comparison parmi NLTK, TextBlob, Stanford CoreNLP, SpaCy and Gensim}
+\href{https://spacy.io/}{SpaCy:} 13 statistical models, deep learning, Python
+
+\href{http://lucene.apache.org/}{Apache Lucene:} work with finite state and get free search engine, Java
+
+\subsubsection{Comparison parmi NLTK, TextBlob, Stanford CoreNLP, SpaCy and Gensim} \todo{suggest delete this part}
 \begin{itemize}
 \item Modèles entraîné ou pas?
 \item La vitesse
 \item NLTK vs. spaCy  Selon https://blog.thedataincubator.com/2016/04/nltk-vs-spacy-natural-language-processing-in-python/, spaCy est 20 fois plus vite que NLTK sur le travail de POS.
 \end{itemize}
-\subsubsection{NLTK}
+\subsubsection{Implement by using Python and NLTK} \todo{put this part after algorithm description}
+
 \begin{enumerate}
-\item Il faut considérer que les donnée on va nourrir au NLTK est dans quelle forme. En fait, nous sommes distribué les donnés dans la paire de frome-lemma.
+
+\item nltk.ConditionalFreqDist
+\begin{lstlisting}
+>>>train_lemma_cfd = nltk.ConditionalFreqDist(train_set)
+>>>print(train_lemma_cfd.items())
+>>>('find', FreqDist({'found': 778, 'find': 204, 'finds': 65, 'finding': 32, 'Finding': 4, 'Finds': 2})
+\end{lstlisting}
+Conditional frequency distributions are used to record the number of times each sample occurred. In our case, we use it to record the frequency of form for each lemma. 
+
+\item nltk.NaiveBayesClassifier.train
+\begin{lstlisting}
+dict_classifier[lemma] = nltk.NaiveBayesClassifier.train(train_set_w)
+\end{lstlisting}
 \end{enumerate}
 
-\subsection{Evaluation}
+\subsection{Evaluation} \todo{suggest delete this part}
 \begin{itemize}
 \item Shell
 \item Python
@@ -151,31 +166,7 @@ SpaCy: (Python)
 \end{itemize}
 
 \section{Fondations de l’Algorithme}
-\subsection{N-gram model}
-Je ne veut pas enlever la ponctuation maintenant. Comme je crois que ils aident la prédiction.  Par example:
-- bigram = ('', 'the')       The : the    =  19142.1 : 1.0
-Si le mot avant "the" est ""(blank), puis "the" sera "The" avec t en majuscule. Parce que c'est normalement le debut d'une phrase.
-
-These words are not independent, if we need to consider all the hypotaxis between these words, we consider to use Markov model to get the probability for the sentence: $P(s)=\prod\limits_{i=1}^{n}P(w_i|w_1...w_{i-1})$
-
-\href{https://en.wikipedia.org/wiki/Markov_chain}{Markov chain}: A Markov chain is "a stochastic model describing a sequence of possible events in which the probability of each event depends only on the state attained in the previous event."
-
-An n-gram model is an expended Markov model, for our case, it means the form for current word, it depends by previous n words. if n = 1, then the form depends by previous word, if n = 2, it's depends by previous 2 words, if n-gram, then we use this one to get the probability for the sentense: $P(s)=\prod\limits_{i=1}^{n}P(w_i|w_{i-n+1},...,w_{i-1})$
-
-n = 1(unigram): $P(s)=\prod\limits_{i}P(w_i)$, e.g. $P(x_1,x_2,...,x_{10}) = P(x_1)P(x_2)...P(x_{10})$
-
-n = 2(bigram): $P(s)=\prod\limits_{i}P(w_i|w_{i-1})$, e.g. $P(x_1,x_2,...,x_{10}) = P(x_1)P(x_2|x_1)P(x_3|x_2)...P(x_{10}|x_9)$
-
-For our case, we predict the sentense, for example: 
-s = "Year 208 BC was a year of the pre-Julian Roman calendar." 
-That is P(s) = P(Year)P(208|Year)P(BC|208)...P(calendar|Roman)P(.|calendar)
-
-So N-gram helps to predict the sentence.
-
-NLTK:
-\begin{lstlisting}
-class nltk.model.ngram.NgramModel(n, train, pad_left=True, pad_right=False, estimator=None, *estimator_args, **estimator_kwargs)[source]
-\end{lstlisting}
+\subsection{N-gram}
 
 \subsection{Naive Bayes}
 Naive Bayes is a classification technique based on Bayes' theorem with independence assumption.  given a problem instance to be classified, represented by a vector ${\mathbf  {x}}=(x_{1},\dots ,x_{n})$ representing some n features (independent variables), it assigns to this instance probabilities for each of K possible outcomes or classes $C_{k}$. \cite{murty_pattern_2011}
@@ -224,8 +215,8 @@ Take the lemma "find" in file <dev-24> as an example. The first 90\% of the file
 \begin{tabular}{|l|llllll|}
 \hline
 form $f_i$       & found & find & finds & finding & Finding & Finds \\ \hline
-freq($f_i$,"find") & 778   & 204  & 65    & 32      & 4       & 2     \\ \hline
-freq($f_i$) & 778   & 204  & 65    & 45      & 4       & 2     \\ \hline
+freq($f_i$,"find") & 778   & 204  & 65    & \textbf{32}      & 4       & 2     \\ \hline
+freq($f_i$) & 778   & 204  & 65    & \textbf{45}      & 4       & 2     \\ \hline
 \end{tabular}
 \caption{conditional frequency of the forms of "find"}
 \label{tb:cfd_find}
@@ -233,7 +224,7 @@ freq($f_i$) & 778   & 204  & 65    & 45      & 4       & 2     \\ \hline
 
 Although we don't even need to use the $freq(f_i)$ in our current model, it's for the future use.
 
-Suppose our one feature NB model is classifying the lemma "find", the only feature is \{"lemma":"find"\}\footnote{In fact, the final format of feature we use is \{"find":True\}} and the classes to be chosen from are \{found, find, finds, finding, Finding, Finds\}. The model will compare the max $p(f_i|l_i)$ and do the classification. No doubt, $p("found" | lemma="find")$ is the max, thus the classes will always be form "found". We call this unigram. Because this model just has one feature and only the $l_i$ will affect the classes $f_i$. 
+Suppose our one feature NB model is classifying the lemma "find", the only feature is \{"lemma":"find"\} and the classes to be chosen from are \{found, find, finds, finding, Finding, Finds\}. The model will compare the max $p(f_i|l_i)$ and do the classification. No doubt, $p("found" | lemma="find")$ is the max, thus the classes will always be form "found". We call this unigram. Because this model just has one feature and only the $l_i$ will affect the classes $f_i$. 
 
 The bigram model we built is taking account the influence of the $l_{i-1}$ to $f_i$.
 \begin{align}
@@ -242,17 +233,19 @@ p(f_i|l_{i-1},l_i) &\propto p(f_i) \cdot  p(l_{i-1},l_i|f_i)  \\
 &= p(f_i) \cdot  p(l_{i-1}|f_i) \cdot p( l_i | f_i) \label{eq:bigram_nb}
 \end{align}
 
-Apply the Naive Bayes assumption to get from equation \ref{eq:bigram_mod} to \ref{eq:bigram_nb}. And in our case, if we see "to find" to the probability of classifying "find" into "finding"   it would be:
-\begin{equation}
-p(finding | to,find) \propto p(finding)\cdot p(to | finding) \cdot  p(find | finding))
+Apply the Naive Bayes assumption to get from equation \ref{eq:bigram_mod} to \ref{eq:bigram_nb}. And in our case, if we see "of find" to the probability of classifying "find" into "finding"   it would be:
+\begin{equation} \label{eq:bigram_find}
+p(finding | of,find) \propto p(finding)\cdot p(of | finding) \cdot  p(find | finding))
 \end{equation}
-$"finding":form_i \quad "to":lemma_{i-1} \quad "find":lemma_i$
+$form_i="finding" \quad lemma_{i-1}="of" \quad lemma_i="find"$
 
 
 We face the problem then, how can we prepare the feature set to feed the NLTK Naive Bayes model? The feature is \{"lemma-1":"to","lemma":"find" \} or 
- \{"bigram":("to","find"),"lemma":"find" \}? Or both of them are incorrect? 
+ \{"bigram":("to","find"),"lemma":"find" \}? Based on equation \ref{eq:bigram_find}. We have to chose \{"lemma-1":"to","lemma":"find" \}. But how about \{"to":True,"find":True \}?
+
 \subsubsection{Smooth method of NLTK Naive Bayes}
-The euation 2 already does its job. But it has a fatal problem. It can't tackle the un-seen lemmas. 
+
+The euation 2 already does its job. But there is a fatal problem. It can't tackle the un-seen lemmas. 
 
 According to the source code of NLTK class NaiveBayesClassifier, it takes Expected Likelihood Estimate method, the probability distribution is given as below:
 \begin{equation}
@@ -266,17 +259,104 @@ This is equivalent to adding 0.5 to the count for each bin, and taking the maxim
 
 \todo{Compare the ELE and MLE}
 
-\subsubsection{Feature format}
 
+
+\subsubsection{Training set}
+
+We didn't notice this problem until we looked at the table \ref{tb:cfd_find}. The $freq("finding")=45$ is slightly bigger that the $freq("finding","find")=32$. That means the form "finding" correspond to other lemma other than "find", for example, lemma "finding". Then question is when we train the classifier for lemma "find", whether should we put the ("finding","finding") in the train data? Or we can put this question in another way, does ("finding","finding") show or not in train data affect the training result of the model?
+
+We observe train data [("find","finds"),("find","finding"),("finding","finding")]\footnote{in the format (lemma, form)}. 
+\begin{lstlisting}
+m1 = [({'lemma':'find'},'finds'),({'lemma':'find'},'finding')]
+m2 = [({'lemma':'find'},'finds'),({'lemma':'find'},'finding'),({'lemma':'finding'},'finding')]
+b1 = [({'find':True},'finds'),({'find':True},'finding')]
+b2 = [({'find':True},'finds'),({'find':True},'finding'),({'finding':True},'finding')]
+\end{lstlisting}
+\begin{align*}
+p_{m1}^*('lemma':'find'|'finding')&=(1+0.5)/(1+1/2)=1 \\
+p_{m2}('lemma':'find'|'finding')&=(1+0.5)/(2+2/2)=0.5 \\
+p_{b1}('find':True|'finding')&=(1+0.5)/(1+1/2)=1 \\
+p_{b2}('find':True|'finding')&=(1+0.5)/(2+2/2)=0.5
+\end{align*}
+*These values can be check by the \_feature\_probdist method of a classifier of class NaiveBayesClassifier. For example:
+\begin{lstlisting}
+classifier_m._feature_probdist[('finding', 'lemma')].prob('find')
+classifier_b._feature_probdist[('finding', 'find')].prob(True)
+\end{lstlisting}
+
+For $p_{m1}$, $C$ equals to the count of feature 'lemma'='find' and classifier form 'finding' show up, which is 1 in this case. And $B$ is the number of the observed value of the feature name 'lemma', we just can see 'lemma'='find', so it's 1.
+But after we add the ("finding","finding"), which corresponds to the feature. For $p_{m2}$, $C$ keeps unchanged. Though it has two possible values 'find' and 'finding' for feature 'lemma' now. So $B$=2.
+
+Same situation for $p_{b1}$ and $p_{b2}$. But we should pay attention that in NLTK NaiveBayes model, it will complete the known features for every element with a None value if this feature doesn't show up in the current item. That means the td\_b2 will be completed as below:
+\begin{lstlisting}
+b2 =
+[({'find':True,'finding':None},'finds'),
+({'find':True,'finding':None},'finding'),
+({'finding':True,'find':None},'finding')]
+\end{lstlisting}
+
+It shows us the ("finding","finding") does matter the probability. 
+\subsubsection{Feature format}
+And take a look of this example below, it will show us the difference between the muti-value format feature and bi-value format feature.
+
+\begin{lstlisting}
+m3 = [({'lemma':'find'},'finds'),({'lemma':'find'},'finding'), ({'lemma':'finding'},'finding'),({'lemma':'pseudo-f'},'finding')]
+b3 = [({'find':True},'finds'),({'find':True},'finding'),
+({'finding':True},'finding'),({'pseudo-f':True},'finding')]
+\end{lstlisting}
+\begin{align*}
+p_{m3}=(1+0.5)/(3+3/2)=0.43 \\
+p_{b3}=(1+0.5)/(3+2/2)=0.5 
+\end{align*}
+
+
+We set a pseudo lemma 'pseudo-f' for 'finding', we add the ('pseudo-f','finding'), the probability p(find|finding) dropped more quickly for the multi-value format feature. For the bi-value format feature, the $B$ value remains 2. But for the multi-value format feature, the $B$ value will grow as we add new lemmas, which will leave more possibility for the unseen situations. This difference won't be very huge for unigram, since most forms just have not more than 2 corresponded lemmas. Actually that's also why we have to set a pseudo lemma for finding. But if we start to use bigram in the multi-value format feature, this difference is much bigger.
+
+\subsection*{Bigram}
+
+In equation \ref{eq:bigram_find}, We calculate the p(find|finding) for both multi-value and bi-value form feature for the train data in <dev-24> and listed in \ref{tb:cfd_find}:
+
+The right part of equation \ref{eq:bigram_find} can be presented in 4 different forms in both multi-value and bi-value format feature. 
+
+\begin{align*}
+&(1)=p(finding) \cdot p("lemma-1":"of"|'finding') \cdot p("lemma"="find"|'finding') \\
+&(2)=p(finding) \cdot p("of":True|'finding') \cdot p("find"=True|'finding') 
+\end{align*}
+\begin{align*}
+p("lemma"="find"|'finding') &= (32+0.5)/(45+2/2) = 0.707 \\
+p("find"=True|'finding') &= (32+0.5)/(45+2/2) = 0.707 \\
+p("lemma-1":"of"|'finding') &= (2+0.5)/(45+316/2) = 0.012 \\
+p("of":True|'finding') &= (2+0.5)/(45+2/2) = 0.054 
+\end{align*}
+
+The "of" shows 2 times in the bigrams of lemma for form finding. The types of the values in the name of "lemma-1" is 316. And it makes the p("lemma-1":"of"|'finding') value quite small. 
+And of course, we don't know the difference of the classification result yet. Because when you compare the p('finding'|"lemma-1":"of","lemma":"find") and p('finds'|"lemma-1":"of","lemma":"find"), the latter will take exactly the same $B$ value, then it reduces the influence of the ratio.
+
+The result proves result by using the multi-value format feature and bi-value format feature is very close.
+
+
+\begin{table}[]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+File           & Bigram multi-value & Bigram bi-value \\ \hline
+dev-24         & 84.38\%            & 84.37\%         \\ \hline
+dev-24...241   & 86.97\%            & 86.91\%         \\ \hline
+\end{tabular}
+\caption{Bigram Accuracy between multi-value and bi-value format feature}
+\label{bigram_nb}
+\end{table}
+\begin{itemize}
+\item dev-24 (1 file) (1578267 itmes for training, and 175363 items for test)
+\item dev-24...241 (10 files): dev-24,dev-25,dev-26,dev-27,dev-28,dev-237,dev-238,dev-239,dev-240,dev-241 (12176586 itmes for training, and 1352955 items for test)
+\end{itemize}
+
+And for the unigram, the model performs the same with two kinds of format feature on dev-24, it gives 78.07\%.
 
 Additionally, we assume that for two lemmas $l_i$ and $l_{i+1}$, the prediction form $f_{i}$ is independent of every other $f_{j}$ for $j \neq i$. Obviously, it's not realistic. For example, the lemma series "student be", if the "student" is predicted as "students", then the "be" should be either "are" or "were". 
 
-
-
-\textcolor{red}{How to use smoothing?}
-{ Nos variables aléatoires sont discrètes. -> MultiNomial Naive Bayes -> Smoothing}
-
-\textcolor{red}{Is that possible overfit if using Naive Bayes?}
+\subsubsection{Over-fitting?}
+We didn't try more data to train our model. Actually for Naive Bayes, another advantage is that it's so simple, so few parameters to be trained. It makes it won't be trapped by the local maximum. So we believe that we don't need to worry about the over-fitting problem.
 
 \subsection{Modèles de Markov cachée HMM}
 \begin{itemize}
@@ -318,16 +398,7 @@ The most difficult task with the model, and requires either MLE estimates of the
 \subsection{Label bias problem}
 
 \section{Related work}
-Compare
-\begin{lstlisting}
-labeled_features_1a = [({"lemma":"the"},'the'), ({"lemma":'be'},'is'), ({"lemma":'be'},'is'), ({"lemma":'be'},'was')]
-labeled_features_1b = [({'the':True},'the'), ({'be':True},'is'), ({'be':True},'is'), ({'be':True},'was')]
-\end{lstlisting}
 
-\begin{lstlisting}
-labeled_features_2a = [({"lemma":"do"},'do'), ({"lemma":"the"},'the'), ({"lemma":'be'},'is'), ({"lemma":'be'},'is'), ({"lemma":'be'},'was')]
-labeled_features_2b = [({'do':True},'do'), ({'the':True},'the'), ({'be':True},'is'), ({'be':True},'is'), ({'be':True},'was')]
-\end{lstlisting}
 
 \section{Discussion}
 \section{Résumé}
