@@ -43,8 +43,8 @@
   tabsize=3
 }
 
-\title{IFT6285 TP}
-\author{Jeanne, Jason WU}
+\title{IFT6285 TP1}
+\author{Jinfang Luo, Jiechen Wu}
 
 \begin{document}
 \maketitle
@@ -61,27 +61,14 @@ We should implement a system to predict the pattern sequences by dealing with le
 \section{Analyze the data}
 
 \subsection{The characteristics of the data}
-The data in three sets are contains of English language, they are extracted from wikipedia and is encoded in utf-8. It comes from totally 2020 slices of 1000 articles. The article is represented by a succession of lines, and a line represents a word with the format(form,tab,lemma), each sentence is marked with an empty line. We can get below characteristics according to these data set:
-\begin{itemize}
-\item English language
-\item Encoded in utf-8
-\item There is connection between words because the words compose a sentence
-\item There is a mapping relation between form and lemma
-\item Take word as an unit, lemma can be treated as the input, and the form as label
-\item Take sentence as a whole object, the sentence which is formed by lemmas and it can be taken as an observation sequence, and the sentence formed by forms as state sequence
+The data in three sets are contains of English language, they are extracted from wikipedia and is encoded in utf-8. It comes from totally 2020 slices of 1000 articles. The article is represented by a succession of lines, and a line represents two terms delimited by <tab> presenting the format (form,lemma), in which the lemma corresponds to form, each sentence is marked with an empty line. 
 
-\begin{figure}[H]  
-\centering
-\includegraphics[width=0.8\textwidth]{process_flow.png}
-\caption{Supervised Classification\protect\footnotemark}  
-\cite{bird_natural_2009}
-\end{figure}
 
-\end{itemize}
 
 \subsection{The relation between Training set, Dev-Test Set and Test Set}
 Training set is a set of examples used for learning, that is to fit the parameters of the classifier. Dev-Test Set is a set of examples used to tune the parameters of a classifier Test set is used only to assess the performance of a fully-specified classifier.\cite{ripley_pattern_2007} We train our model in dev-test set, there is another advantage for this, is the \href{https://en.wikipedia.org/wiki/Cross-validation_(statistics)}{cross validation} for better training our model. During our development, we use a part of dev data, and split the data by 9:1 for assigning to training set and test set.
 
+\todo{Short the sentence?}
 After having our classifier model, we can use it to predict with input. In our case, that means we can use the classifier model to predict the form with lemma of the word. After getting the predicted word, then we can compare with the data in test set, if the predicted label is matched with the form in test set, true\_positive increase by 1, if it isn't matched, true\_positive keeps the same value, after comparing all the words, we can calculate the accuracy for our classifier model. 
 
 \subsection{Rules based method or Probability based method}
@@ -132,7 +119,14 @@ We list some features of these open source tools for the future needs in case:
 , "cpu 2.6GHz Inter Core i5"
 , "Memory 8GB 1600 MHZ DDR3"\}
 
-\section{Fondations de l’Algorithme}
+\section{Fondation of Algorithm}
+\begin{figure}[H]  
+\centering
+\includegraphics[width=0.8\textwidth]{process_flow.png}
+\caption{Supervised Classification\protect\footnotemark}  
+\cite{bird_natural_2009}
+\end{figure}
+
 \subsection{Maximum Likelihood Estimate and Bayes Theorem}
 Express our idea using Bayesian probability terminology:
 
@@ -369,7 +363,7 @@ Due to the Naive Bayes Assumption, the features are independent. Then we ignore 
 Additionally, since we classify the lemma one by one. In our model, we assume that for two lemmas $l_i$ and $l_{j}$, the prediction form $f_{i}$ is independent of every other $f_{j}$ for $j \neq i$. Obviously, it's not realistic. For example, the lemma series "student be", if the "student" is predicted as "students", then the "be" should be either "are" or "were".
 \subsection*{Expected Likelihood Estimate}
 The Naive Bayes Model is not trained in NLTK. But we have the reason to believe the ELE model or ELE technique is chosen specially for the classification task. 
-The ELE formula looks like the Laplace smoothing with the alpha = 0.5.
+The ELE model is the additive smoothing with the lambda = 0.5, comparing to Laplace estimation which is with the lambda = 1.
 But we are still doubt that whether it's the best distribution for our case. More work should be done here.
 
 \section{Conclusion}
