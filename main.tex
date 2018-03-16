@@ -11,6 +11,7 @@
 %% Useful packages
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage[colorinlistoftodos]{todonotes}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 
@@ -49,48 +50,46 @@
 \maketitle
 
 \begin{abstract}
-Dans ce travail pratique,  on discutera les methodes de la prédiction d'une séquence de formes à partir d'une séquence de lemmes.
+Lemma to Form prediction problem can be seen as a problem of reverse lemmalisation, Which is theoretically can't reach the 100\% accuracy. The statistical method may be used to get a solution. We will give the result by applying the model MLE, Naive Bayes with the help of nltk package. And we will discuss the feature format and their influence to the performance while using the nltk naive bayes model. We found that how to extract feature is the key factor to improve accuracy for NB.
 \end{abstract}
 
 \section{Introduction}
-What's our purpose?
+We are provided the samples with two lines of words, the words linked to a sentence. one line is the word with the tense, another line is the lemma of the word. A lemma is the canonical form of a set of words. For example, 'found, finds, find' are words with tense of the word 'find' as the lemma.
 
-We are providing the samples with two lines of words, the words linked to a sentence. one line is the word with the tense, another line is the lemma of the word. A lemma is the canonical form of a set of words. For example, 'found, finds, find' are words with tense of the word 'find' as the lemma.
+We should implement a system to predict the pattern sequences by dealing with lemma sequences. We may call this issue as 'lemma-form' mapping problem. We are not just focusing on how to find a solution on solving the mapping issue. What we would like to know is how the models work, and what's the limit to them.  
 
-We should implement a system to predict the pattern sequences by dealing with lemma sequences. We may call this issue as 'lemma-form' mapping problem. We are not just focusing on how to find a solution on solving the mapping issue, What we would like to know is how many classifier models we could take into account, and we would choose which one of them to implement our notion. We would also like to know the accuracy of our prediction system for predicting and we should try to improve the accuracy rate with kinds of different methods.
-
-Accuracy = $\frac{true\_positive}{true\_positive + false\_positive}$ = $\frac{\#true\_positive}{\#total\_words}$
-
-\section{Analyst the data}
+\section{Analyze the data}
 
 \subsection{The characteristics of the data}
-The data in three sets are contains of English language, they are extracted from wikipedia and is encoded in utf-8. It comes from totally 2020 slices of 1000 articles. The article is represented by a succession of lines, and a line represents a word with the format(form,tab,lemma), each sentence is marked with an empty line. We can get below characteristics according to this information:
+The data in three sets are contains of English language, they are extracted from wikipedia and is encoded in utf-8. It comes from totally 2020 slices of 1000 articles. The article is represented by a succession of lines, and a line represents a word with the format(form,tab,lemma), each sentence is marked with an empty line. We can get below characteristics according to these data set:
 \begin{itemize}
 \item English language
 \item Encoded in utf-8
 \item There is connection between words because the words compose a sentence
 \item There is a mapping relation between form and lemma
 \item Take word as an unit, lemma can be treated as the input, and the form as label
-\begin{center}
-\includegraphics[width=0.8\textwidth]{process_flow.png}
-\end{center}
 \item Take sentence as a whole object, the sentence which is formed by lemmas and it can be taken as an observation sequence, and the sentence formed by forms as state sequence
 
+\begin{figure}[H]  
+\centering
+\includegraphics[width=0.8\textwidth]{process_flow.png}
+\caption{Supervised Classification\protect\footnotemark}  
+\cite{bird_natural_2009}
+\end{figure}
 
 \end{itemize}
 
 \subsection{The relation between Training set, Dev-Test Set and Test Set}
-
-We would use the training set to train our feature-based model, Then we can apply our model on dev-test set to optimize our model in case we are using  parameters overmuch which may cause overfitting.\todo{my understand for the sequence by using the sets may not correct.} We train our model in dev-test set, there is another advantage for this, is the cross validation for better training our model. During our development, we use a part of dev data, and split the data by 9:1 for assigning to training set and test set.
+\todo{Should cite here?}
+Training set is a set of examples used for learning, that is to fit the parameters [i.e., weights] of the classifier.
+Dev-Test Set Validation set:
+A set of examples used to tune the parameters [i.e., architecture, not weights] of a classifier, for example to choose the number of hidden units in a neural network.
+Test set:
+A set of examples used only to assess the performance [generalization] of a fully-specified classifier.\todo{my understand for the sequence by using the sets may not correct.} We train our model in dev-test set, there is another advantage for this, is the cross validation for better training our model. During our development, we use a part of dev data, and split the data by 9:1 for assigning to training set and test set.
 
 After having our classifier model, we can use it to predict with input. In our case, that means we can use the classifier model to predict the form with lemma of the word. After getting the predicted word, then we can compare with the data in test set, if the predicted label is matched with the form in test set, true\_positive increase by 1, if it isn't matched, true\_positive keeps the same value, after comparing all the words, we can calculate the accuracy for our classifier model. 
 
-\todo{Don't forget to cite.}
-\begin{center}
-\includegraphics[width=0.8\textwidth]{Corpus.png}
-\end{center}
-
-\subsection{The statistic}
+\subsection{Rules based method or Probability based method}
 
 There are two methods to process language problem. One is building the system by rules, another is based on statistic.
 
@@ -99,32 +98,23 @@ If we implement our system based on rules. First step is performing lexical anal
 For example, we need to predict form of the word 'become' in our sentence which contains by lemmas: "a standardized version of the game eventually become know as bagatelle."
 First we need to know the grammatical tense according to the context, if it's past tense, then we analyst semantic meaning, then parser and perform lexical analysis, at last we should know the form of the word 'become' is mapping to 'became'.
 
-Another method is by mathematic statistical processing. We build the mathematic model to learn the feature or rule for the problem. We can choose different statistic methods like Naive Bayes, HMM, or machine learning to train our model. By using statistic method, we calculate the probability of the form by the model, then we choose the highest probability as the predict result. 
+Another method is by mathematic statistical processing. We build the mathematic model to learn the feature or rule for the problem. By using statistic method, we calculate the probability of the form by the model, then we choose the highest probability as the predict result. 
+
+Not to much similar work can be refereed on this lemma-form prediction problem. We choose the latter. Because rules based method will ask for the collection of the rules. It's obviously not the purpose of this project.
 
 \subsection{Reduce the noise}
-Noise is an unavoidable problem, and it is the first step we have to deal with them. Because it will affect the data preparation processes in our development and cause errors due to the predict result less accurate.
-Analyst the data and we found that there is one kind of noise in them. We think they may introduced by encoding problem. When the data is encoded by utf-8, after decoding them, there is lots of messy meta in these data. \todo{Please explain the solution on this problem}
+The punctuations in the raw data can be seen as the noise 
+if we apply the POS tagging. But consider about the prediction may based on the appearance of the certain punctuations, For example, the word of the beginning of the sentence will be with the first letter in capital. The word follows a comma is usually in lowercase, et. We decide to keep these information and don't treat them as the noise.
+Non-UTF8 characters won't bother us if we read the file in "latin1". And we will discuss the possible reason that cause this problem and our solution to get rid of them in related work section.
 
-\begin{center}
-\includegraphics[width=1\textwidth]{noise1.png}
 
-\end{center}
-
-\begin{center}
-
-\includegraphics[width=1\textwidth]{noise2.png}
-\end{center}
-
-\subsection{Baseline}
-Si on faisait rien, combien de précision de prédiction a-t-on gagné? \todo{Not sure if we still need to keep this part}
-
-\section{Tool we use to implement our idea}
+\section{Tools}
 \subsection{Open source tools}
 There are some open source tools for handling Natural Language process, we compared some of them and then we choose to use NLTK in Python because of the program language and the powerful modules it contains. 
 
 We list some features of these open source tools for the future needs in case:
 
-\href{https://stanfordnlp.github.io/CoreNLP/}{Stanford\'s CoreNLP:} linguistic analysis tools, Java
+\href{https://stanfordnlp.github.io/CoreNLP/}{Stanford CoreNLP:} linguistic analysis tools, Java
 
 \href{http://textblob.readthedocs.io/en/dev/}{TextBlob:} Word inflection and lemmatization, Java
 
@@ -134,56 +124,22 @@ We list some features of these open source tools for the future needs in case:
 
 \href{http://lucene.apache.org/}{Apache Lucene:} work with finite state and get free search engine, Java
 
-\subsubsection{Comparison parmi NLTK, TextBlob, Stanford CoreNLP, SpaCy and Gensim} \todo{suggest delete this part}
-\begin{itemize}
-\item Modèles entraîné ou pas?
-\item La vitesse
-\item NLTK vs. spaCy  Selon https://blog.thedataincubator.com/2016/04/nltk-vs-spacy-natural-language-processing-in-python/, spaCy est 20 fois plus vite que NLTK sur le travail de POS.
-\end{itemize}
-\subsubsection{Implement by using Python and NLTK} \todo{put this part after algorithm description}
-
+\subsection{NLTK Naive Bayes Related}
 \begin{enumerate}
-
-\item nltk.ConditionalFreqDist
-\begin{lstlisting}
->>>train_lemma_cfd = nltk.ConditionalFreqDist(train_set)
->>>print(train_lemma_cfd.items())
->>>('find', FreqDist({'found': 778, 'find': 204, 'finds': 65, 'finding': 32, 'Finding': 4, 'Finds': 2})
-\end{lstlisting}
-Conditional frequency distributions are used to record the number of times each sample occurred. In our case, we use it to record the frequency of form for each lemma. 
-
-\item nltk.NaiveBayesClassifier.train
-\begin{lstlisting}
-dict_classifier[lemma] = nltk.NaiveBayesClassifier.train(train_set_w)
-\end{lstlisting}
+\item nltk.ConditionalFreqDist - Mainly used to calculate the conditional frequence distribution. Can be taken as dict which each value is the FreqDist for each key. Take tuple list as parameter.
+\item nltk.NaiveBayesClassifier - The nltk Naive Bayes Classifier. The train() method of this class take the train data and return a classifier object, which can be use to invoke classify() to label the data. train() take labeled feature tuple list and classify() take the feature list.
+\item nltk.FreqDist - Derived from high performance Counter object in python. Calculate the frequency for each item.
 \end{enumerate}
-
-\subsection{Evaluation} \todo{suggest delete this part}
-\begin{itemize}
-\item Shell
-\item Python
-\item Excel
-\end{itemize}
+\subsection{System Environment}
+\{"python 3.6"
+, "nltk 3.2.5"
+, "macOS version 10.13.2"
+, "cpu 2.6GHz Inter Core i5"
+, "Memory 8GB 1600 MHZ DDR3"\}
 
 \section{Fondations de l’Algorithme}
-\subsection{N-gram}
-
-\subsection{Naive Bayes}
-Naive Bayes is a classification technique based on Bayes' theorem with independence assumption.  given a problem instance to be classified, represented by a vector ${\mathbf  {x}}=(x_{1},\dots ,x_{n})$ representing some n features (independent variables), it assigns to this instance probabilities for each of K possible outcomes or classes $C_{k}$. \cite{murty_pattern_2011}
-
-\[p(C_{k}\mid x_{1},\dots ,x_{n})={\frac {1}{Z}}p(C_{k})\prod _{i=1}^{n}p(x_{i}\mid C_{k})\]
-
-With the the "naive" conditional independence assume that each feature $x_{i}$ is conditionally independent of every other feature $x_{j}$ for $j \neq i$, given the category. 
-
-The prediction lemma-form problem, For Any given lemma $l_i$ we suppose that there is a form list $Forms(l_i)=\{f_{i1},f_{i2},...,f_{ik}\}$ which contains all its possible forms. The lemmas sequence $(l_1,l_2,...,l_n)$ are the sequence we can observe, so we take them as features. Then the form sequence is the classes that we want to put the features in\footnote{We will probably use both "label" or "class","tag" or "classify" in this notes, they will mean same thing.}. Actually,in this way,  we built up a label list contains all the forms show up in the corpus $\{Forms(l_1),Forms(l_2),..., Forms(l_n)\}$, the size of this list will be $V$, which is the total vocabulary of the forms in the corpus. Unfortunately, due to the immense of the vocabulary, the conditional probabilities table will be infeasible.
-
-\[p(V|l_1,...,l_n) = \frac{1}{Z} p(V) \prod _{i=1}^{n}p(l_i \mid V) \]
-
-Actually when we do predicting for the lemma $l_i$ in a sequence $(l_1,l_2,...,l_n)$, we just need to look at $Forms(l_i)$ and don't have to take account the $Forms(l_j)$ ($j \neq i$). In this section, We see the prediction of form for each lemma $l_i  \Longrightarrow f_i$ as a classification by choosing the labels only from $Forms(l_i)$. It's reasonable since the lemma is kind of the product of the lemmalization of the correspond forms $\{f_{i1},f_{i2},...,f_{ik}\}$. The one feature NB model correspond to our problem is like:
-
-\[p(f_i|l_i) \propto p(f_i) \cdot  p(l_i|f_i)\]
-
-Thus we apply the Naive Bayes Model to our lemma-form prediction. Express our idea using Bayesian probability terminology:\todo{If the essay is too long, delete here.}
+\subsection{Maximum Likelihood Estimate and Bayes Theorem}
+Express our idea using Bayesian probability terminology:
 
 \begin{align*}
 posterior  &= \frac{prior \times likelihood}{evidence} \\
@@ -204,11 +160,46 @@ And $p(f_i) \cdot p(l_i \mid f_i)$ can even be simplified if we apply the MLE es
 
 The equation \ref{eq:simple_mle} is a simple theoretical model. It maybe a little astonishing that,based on this model, if we want to compare $p(f_i|l_i)$ and $p(f_j|l_i)$, just need to compare the co-occurrence $freq(l_i,f_i)$ and $freq(l_i,f_j)$.  The problem is we can't deal with those lemmas we haven't seen. Since we use NLTK package, the smooth method of NLTK will be given later on. 
 
+The result of unigram MLE will be used as our baseline.
+
+\subsection{Naive Bayes}
+Naive Bayes is a classification technique based on Bayes' theorem with independence assumption.  given a problem instance to be classified, represented by a vector ${\mathbf  {x}}=(x_{1},\dots ,x_{n})$ representing some n features (independent variables), it assigns to this instance probabilities for each of K possible outcomes or classes $C_{k}$. \cite{murty_pattern_2011}
+
+\[p(C_{k}\mid x_{1},\dots ,x_{n})={\frac {1}{Z}}p(C_{k})\prod _{i=1}^{n}p(x_{i}\mid C_{k})\]
+
+With the the "naive" conditional independence assume that each feature $x_{i}$ is conditionally independent of every other feature $x_{j}$ for $j \neq i$, given the category. 
+
+The prediction lemma-form problem, For Any given lemma $l_i$ we suppose that there is a form list $Forms(l_i)=\{f_{i1},f_{i2},...,f_{ik}\}$ which contains all its possible forms. The lemmas sequence $(l_1,l_2,...,l_n)$ are the sequence we can observe, so we take them as features. Then the form sequence is the classes that we want to put the features in\footnote{We will probably use both "label" or "class","tag" or "classify" in this notes, they will mean same thing.}. Actually,in this way,  we built up a label list contains all the forms show up in the corpus $\{Forms(l_1),Forms(l_2),..., Forms(l_n)\}$, the size of this list will be $V$, which is the total vocabulary of the forms in the corpus. Unfortunately, due to the immense of the vocabulary, the conditional probabilities table will be infeasible.
+
+\[p(V|l_1,...,l_n) = \frac{1}{Z} p(V) \prod _{i=1}^{n}p(l_i \mid V) \]
+
+Actually when we do predicting for the lemma $l_i$ in a sequence $(l_1,l_2,...,l_n)$, we just need to look at $Forms(l_i)$ and don't have to take account the $Forms(l_j)$ ($j \neq i$). In this section, We see the prediction of form for each lemma $l_i  \Longrightarrow f_i$ as a classification by choosing the labels only from $Forms(l_i)$. It's reasonable since the lemma is kind of the product of the lemmalization of the correspond forms $\{f_{i1},f_{i2},...,f_{ik}\}$. The one feature NB model correspond to our problem is like:
+
+\[p(f_i|l_i) \propto p(f_i) \cdot  p(l_i|f_i)\]
+
+
 And since one time training will prepare the parameters for the prediction for one lemma, if the train set contains $n$ different lemmas, then the model will be trained $n$ times. Nevertheless the same lemma will share the same parameters. So we use a dictionary to store them to avoid the the repetition work.
 
 
-\todo{Should be moved after the smooth part}
-Take the lemma "find" in file <dev-24> as an example. The first 90\% of the file is taken as the train set (N=1576467). Table \ref{tb:cfd_find} shows the conditional frequency of the forms of "find" in the train set. It means $freq(lemma="find", form="found")=778$, $freq(lemma="find",form="find")=204$ etc.
+The bigram model we built is taking account the influence of the $l_{i-1}$ to $f_i$.
+\begin{align}
+p(f_i|l_{i-1},l_i) &\propto p(f_i) \cdot  p(l_{i-1},l_i|f_i)  \\
+&= p(f_i) \cdot  p(l_{i-1}|f_i) \cdot p( l_i | l_{i-1},f_i) \label{eq:bigram_mod} \\
+&= p(f_i) \cdot  p(l_{i-1}|f_i) \cdot p( l_i | f_i) \label{eq:bigram_nb}
+\end{align}
+
+Apply the Naive Bayes assumption to get from equation \ref{eq:bigram_mod} to \ref{eq:bigram_nb}. 
+
+And in our case, if we see "of find" to the probability of classifying "find" into "finding"   it would be:
+\begin{equation} \label{eq:bigram_find}
+p(finding | of,find) \propto p(finding)\cdot p(of | finding) \cdot  p(find | finding)) 
+\end{equation}
+$form_i="finding" \quad lemma_{i-1}="of" \quad lemma_i="find"$ 
+
+
+\subsection{Practical Work with NB}
+
+Take the lemma "find" in file <dev-24> as an example(The first 90\% of the file is taken as the train set N=1576467). Table \ref{tb:cfd_find} shows the conditional frequency of the forms of "find" in the train set. 
 
 \begin{table}[htb]
 \centering
@@ -226,38 +217,15 @@ Although we don't even need to use the $freq(f_i)$ in our current model, it's fo
 
 Suppose our one feature NB model is classifying the lemma "find", the only feature is \{"lemma":"find"\} and the classes to be chosen from are \{found, find, finds, finding, Finding, Finds\}. The model will compare the max $p(f_i|l_i)$ and do the classification. No doubt, $p("found" | lemma="find")$ is the max, thus the classes will always be form "found". We call this unigram. Because this model just has one feature and only the $l_i$ will affect the classes $f_i$. 
 
-The bigram model we built is taking account the influence of the $l_{i-1}$ to $f_i$.
-\begin{align}
-p(f_i|l_{i-1},l_i) &\propto p(f_i) \cdot  p(l_{i-1},l_i|f_i)  \\
-&= p(f_i) \cdot  p(l_{i-1}|f_i) \cdot p( l_i | l_{i-1},f_i) \label{eq:bigram_mod} \\
-&= p(f_i) \cdot  p(l_{i-1}|f_i) \cdot p( l_i | f_i) \label{eq:bigram_nb}
-\end{align}
-
-Apply the Naive Bayes assumption to get from equation \ref{eq:bigram_mod} to \ref{eq:bigram_nb}. And in our case, if we see "of find" to the probability of classifying "find" into "finding"   it would be:
-\begin{equation} \label{eq:bigram_find}
-p(finding | of,find) \propto p(finding)\cdot p(of | finding) \cdot  p(find | finding))
-\end{equation}
-$form_i="finding" \quad lemma_{i-1}="of" \quad lemma_i="find"$
-
-
-We face the problem then, how can we prepare the feature set to feed the NLTK Naive Bayes model? The feature is \{"lemma-1":"to","lemma":"find" \} or 
- \{"bigram":("to","find"),"lemma":"find" \}? Based on equation \ref{eq:bigram_find}. We have to chose \{"lemma-1":"to","lemma":"find" \}. But how about \{"to":True,"find":True \}?
-
 \subsubsection{Smooth method of NLTK Naive Bayes}
 
-The euation 2 already does its job. But there is a fatal problem. It can't tackle the un-seen lemmas. 
-
-According to the source code of NLTK class NaiveBayesClassifier, it takes Expected Likelihood Estimate method, the probability distribution is given as below:
+According to the source code of NLTK class ELEProbDist which is the feature distribution function of NaiveBayesClassifier, it takes Expected Likelihood Estimate method, the probability distribution is given as below:\cite{loper_nltk.probability_nodate}
 \begin{equation}
 p(x_i)=\frac{C+0.5}{N+B/2} \qquad X = \{x_1,x_2,\dots,x_o,\dots\}
 \end{equation}
 
-$C$ is the frequency we count with $N$ outcomes and $B$ the number of the observed value of $X$. As addressed in the comment of the source code:\footnote{\url{http://www.nltk.org/_modules/nltk/probability.html}}
-\begin{quotation}
-This is equivalent to adding 0.5 to the count for each bin, and taking the maximum likelihood estimate of the resulting frequency distribution.
-\end{quotation}
+$C$ is the frequency we count with $N$ outcomes and $B$ the number of the observed value of $X$. 
 
-\todo{Compare the ELE and MLE}
 
 
 
@@ -295,9 +263,19 @@ b2 =
 ({'finding':True,'find':None},'finding')]
 \end{lstlisting}
 
-It shows us the ("finding","finding") does matter the probability. 
+It shows us adding ("finding","finding") does matter the probability. Compare the train data set (2) to (1) for $l_i$. So those pairs which contain the forms of the current objective lemma added to the train set.
+\begin{align*}
+&train\_data\_set_{l_i} (1) = pairs_{l_{i}} = [ (l_{i1},f_{i1})*freq(l_{i1},f_{i1}),\dots,(l_{ik},f_{ik})*freq(l_{i1},f_{ik})] \\
+&train\_data\_set_{l_i} (2)= \sum_{j} pairs_{f_{ij}} \\
+&pairs_{f_{ij}}=[ (l_{j1},f_{ij})*freq(l_{j1},f_{ij}),\dots,(l_{jm},f_{ij})*freq(l_{jm},f_{ij}) ] \\ 
+&f_{i1},\dots,f_{ik} \in Forms_{l_i} \\
+&l_{j1},\dots,l_{jm} \in Lemmas_{f_{ij}} 
+\end{align*}
+
+Add the ("finding","finding") to the train data, to decrease the p(find|finding) it's like to tell the model that, if there are more form "finding" correspond to lemma "finding", then probably few correspond to lemma "find". 
+
 \subsubsection{Feature format}
-And take a look of this example below, it will show us the difference between the muti-value format feature and bi-value format feature.
+And take a look of this example below, it will show us the difference between the muti-value format feature and bi-value format feature. 
 
 \begin{lstlisting}
 m3 = [({'lemma':'find'},'finds'),({'lemma':'find'},'finding'), ({'lemma':'finding'},'finding'),({'lemma':'pseudo-f'},'finding')]
@@ -310,11 +288,14 @@ p_{b3}=(1+0.5)/(3+2/2)=0.5
 \end{align*}
 
 
-We set a pseudo lemma 'pseudo-f' for 'finding', we add the ('pseudo-f','finding'), the probability p(find|finding) dropped more quickly for the multi-value format feature. For the bi-value format feature, the $B$ value remains 2. But for the multi-value format feature, the $B$ value will grow as we add new lemmas, which will leave more possibility for the unseen situations. This difference won't be very huge for unigram, since most forms just have not more than 2 corresponded lemmas. Actually that's also why we have to set a pseudo lemma for finding. But if we start to use bigram in the multi-value format feature, this difference is much bigger.
+We set a pseudo lemma 'pseudo-f' for 'finding', we add the ('pseudo-f','finding'), the probability p(find|finding) dropped more quickly for the multi-value format feature. For the bi-value format feature, the $B$ value remains 2. But for the multi-value format feature, the $B$ value will grow as we add new lemmas, which will leave more possibility for the unseen situations. This difference won't be very huge for unigram, since most forms just have not more than 2 corresponded lemmas. Actually that's also why we have to set a pseudo lemma for "finding". But if we start to use bigram in the multi-value format feature, this difference is much bigger.
 
 \subsection*{Bigram}
 
-In equation \ref{eq:bigram_find}, We calculate the p(find|finding) for both multi-value and bi-value form feature for the train data in <dev-24> and listed in \ref{tb:cfd_find}:
+Before we implement the equation \ref{eq:bigram_find} for bigram, we face the problem then, how can we prepare the feature set to feed the NLTK Naive Bayes model? The feature is \{"lemma-1":"to","lemma":"find" \} or 
+ \{"bigram":("to","find"),"lemma":"find" \}? Based on equation \ref{eq:bigram_find}. We have to chose \{"lemma-1":"to","lemma":"find" \}. But how about \{"to":True,"find":True \}?
+
+Using equation \ref{eq:bigram_find}, We calculate the p(find|finding) for both multi-value and bi-value form feature for the train data in <dev-24> and listed in \ref{tb:cfd_find}:
 
 The right part of equation \ref{eq:bigram_find} can be presented in 4 different forms in both multi-value and bi-value format feature. 
 
@@ -335,15 +316,15 @@ And of course, we don't know the difference of the classification result yet. Be
 The result proves result by using the multi-value format feature and bi-value format feature is very close.
 
 
-\begin{table}[]
+\begin{table}[htp]
 \centering
-\begin{tabular}{|l|l|l|}
+\begin{tabular}{|l|l|l|l|}
 \hline
-File           & Bigram multi-value & Bigram bi-value \\ \hline
-dev-24         & 84.38\%            & 84.37\%         \\ \hline
-dev-24...241   & 86.97\%            & 86.91\%         \\ \hline
+File           & Baseline  & Bigram multi-value & Bigram bi-value \\ \hline
+dev-24         & 78.09\%    & 84.38\%            & 84.37\%         \\ \hline
+dev-24...241   & 79.55\%    & 86.97\%            & 86.91\%         \\ \hline
 \end{tabular}
-\caption{Bigram Accuracy between multi-value and bi-value format feature}
+\caption{Bigram accuracy of multi-value and bi-value format feature}
 \label{bigram_nb}
 \end{table}
 \begin{itemize}
@@ -353,56 +334,52 @@ dev-24...241   & 86.97\%            & 86.91\%         \\ \hline
 
 And for the unigram, the model performs the same with two kinds of format feature on dev-24, it gives 78.07\%.
 
-Additionally, we assume that for two lemmas $l_i$ and $l_{i+1}$, the prediction form $f_{i}$ is independent of every other $f_{j}$ for $j \neq i$. Obviously, it's not realistic. For example, the lemma series "student be", if the "student" is predicted as "students", then the "be" should be either "are" or "were". 
 
 \subsubsection{Over-fitting?}
-We didn't try more data to train our model. Actually for Naive Bayes, another advantage is that it's so simple, so few parameters to be trained. It makes it won't be trapped by the local maximum. So we believe that we don't need to worry about the over-fitting problem.
+Actually for Naive Bayes, another advantage is that it's so simple, so few parameters to be trained. It makes it won't be trapped by the local maximum. So we believe that we don't need to worry about the over-fitting problem.
 
-\subsection{Modèles de Markov cachée HMM}
-\begin{itemize}
-\item Théorie
-
-The HMM is an extension to the Markov chain.
-
-
-
-A HMM can be characterised by:
-\begin{itemize}
-\item the output observation alphabet. This is the set of symbols which may be observed as output of the system.
-\item the set of states.
-\item the transition probabilities $a_{ij} = P(s_t = j | s_{t-1} = i)$. These represent the probability of transition to each state from a given state.
-\item the output probability matrix $b_i(k) = P(X_t = o_k | s_t = i)$. These represent the probability of observing each symbol in a given state.
-\item the initial state distribution. This gives the probability of starting in each state.
-\end{itemize}
-
-The output observation alphabet is the set of word forms (the lexicon), and the 
-remaining three parameters are derived by a training regime.
-
-HMM regards to the optimal combination of tags for a larger unit, such as a sentence.
-
-Viterbi algorithm, which efficiently computes the optimal path through the graph given the sequence of words forms.
-
-The most difficult task with the model, and requires either MLE estimates of the parameters or unsupervised learning using the Baum-Welch algorithm, a variant of EM.
-
-
-\item Lier les séquences aux états
-\item Lissage
-\item Apprentissage des paramètres
-\end{itemize}
-
-
-\subsection{Générateur vs Discriminant}
-
-\subsection{Local Maximum}
-
-\subsection{Label bias problem}
 
 \section{Related work}
+\subsection*{Lemma == Form}
+The prediction of whether Lemma \& Form are identical. It's a simplified problem we tried to resolve. By using it test our models and ideas, we get a very short training and testing time and the performance of the result can also be a reference for the solution to the original problem. Because the performance of the original problem can never exceed the result of this simplified problem.
 
+\begin{table}[htp]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+       & unigram & bigram & trigram \\ \hline
+dev-24 & 84.12\%   & 89.53\%  & 87,93\%   \\ \hline
+\end{tabular}
+\caption{Lemma == Form prediction}
+\label{tb:lemma_eq_tb}
+\end{table}
+
+\subsection*{POS}
+We believe that Part of Speech tagging will help to eliminate the ambiguity of the lemma, e.g. play as verb or as noun. Result shows it will slightly increase the accuracy but not more than 0.4\%, which is a little lower than we expected. The possible reason for this is: firstly, the lemmas who have the ambiguity between different kinds of POS tagging are not so many. Second, apply the real text trained POS tagging to lemma, it gives a relative lower performance also.
+
+\subsection*{HMM}
+Our first idea is to apply HMM to this problem. The output observation is the lemma sequence and the form sequence are hidden states. But after the trial of the HMM tagger in NLTK, and we found it's incredibly slow. A training model with only 2000 sentences predict incorrectly 5 words in about 5 minutes. \todo{More explication?} The mapping result is unwatchable. We guess that's because we use a supervised training method. For calculating the hidden state transfer probability, we deliver our labeled sequence for training, but there are a lot of possibilities for such situation while $label_{i-1}$ = 'to', the next word $label_i$ could be personal pronoun or any verb. So 2000 sentences is very far away for our feasible training set. We will continue research this problem after the report.
+
+\subsection*{Non-utf8}
+The appearance  of the Non-utf8 will cause the code can't succeed to decode the corpus text in encoding "utf8". We found most of the non-utf8 characters show in lemmas and the non-utf8 characters byte minus the byte at correspond position in form equals 0x20. It's the value we usually use to get a uppercase letter to lowercase. So we guess the problem is caused by the program lemmalisation lowercased incorrectly some utf-8 letters. IF the encoding "latin1" is used for both read and write the corpus file. The problem is ignored. Otherwise, if the encoding utf-8 is used to read the file. Since the non-utf8 will cause the error of the decoder, two situation will happen to the non-utf8 characters: ignore or replace. And both situation will cause the mismatching of the lemma and form. It will slight affect the accuracy of the prediction. 
+Since we haven't done the complete statistics for these non-utf8 characters, the reason caused this problem remains a guess. But if the related work would like to be done by someone, We suggest the exception tackle mechanism in python to fix or count these non-utf8 characters. It seems very practical.  
 
 \section{Discussion}
-\section{Résumé}
-\cite{greenwade93}
+\subsection*{Smooth for unseen}
+And if the bigram model encounter a unseen bigram pair, which means a unseen new feature to it, it will simply delete that feature. Thus for that pair, only the original lemma feature provide the information, in this situation, it's a unigram model.
+If the model encounter a unseen lemma, we predict a identical form for it. That's out of the nltk Naive Bayes. 
+\subsection*{Limit}
+Due to the Naive Bayes Assumption, the features are independent. Then we ignore the influence between the lemmas. But it's not realistic. 
+
+Additionally, since we classify the lemma one by one. In our model, we assume that for two lemmas $l_i$ and $l_{j}$, the prediction form $f_{i}$ is independent of every other $f_{j}$ for $j \neq i$. Obviously, it's not realistic. For example, the lemma series "student be", if the "student" is predicted as "students", then the "be" should be either "are" or "were".
+\subsection*{Expected Likelihood Estimate}
+The Naive Bayes Model is not trained in NLTK. But we have the reason to believe the ELE model or ELE technique is chosen specially for the classification task. 
+The ELE formula looks like the Laplace smoothing with the alpha = 0.5.
+But we are still doubt that whether it's the best distribution for our case. More work should be done here.
+
+\section{Conclusion}
+Naive Bayes classifier in NLTK is capable of resolving the lemma-form prediction problem and gives us a good performance compare to the baseline. But its relatively fixed interface makes the user not easy to adjust the parameter to achieve a better performance.
+
 
 
 \bibliographystyle{apacite}
