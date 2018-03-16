@@ -81,8 +81,7 @@ The data in three sets are contains of English language, they are extracted from
 
 \subsection{The relation between Training set, Dev-Test Set and Test Set}
 \todo{Should cite here?}
-Training set is a set of examples used for learning, that is to fit the parameters [i.e., weights] of the classifier.
-Dev-Test Set is a set of examples used to tune the parameters [i.e., architecture, not weights] of a classifier
+Training set is a set of examples used for learning, that is to fit the parameters of the classifier. Dev-Test Set is a set of examples used to tune the parameters of a classifier
 Test set is used only to assess the performance [generalization] of a fully-specified classifier.\todo{my understand for the sequence by using the sets may not correct.} We train our model in dev-test set, there is another advantage for this, is the cross validation for better training our model. During our development, we use a part of dev data, and split the data by 9:1 for assigning to training set and test set.
 
 After having our classifier model, we can use it to predict with input. In our case, that means we can use the classifier model to predict the form with lemma of the word. After getting the predicted word, then we can compare with the data in test set, if the predicted label is matched with the form in test set, true\_positive increase by 1, if it isn't matched, true\_positive keeps the same value, after comparing all the words, we can calculate the accuracy for our classifier model. 
