@@ -50,7 +50,7 @@
 \maketitle
 
 \begin{abstract}
-Lemma to Form prediction problem can be seen as a problem of reverse lemmalisation, Which is theoretically can't reach the 100\% accuracy. The statistical method may be used to get a solution. We will give the result by applying the model MLE, Naive Bayes with the help of nltk package. And we will discuss the feature format and their influence to the performance while using the nltk naive bayes model. We found that how to extract feature is the key factor to improve accuracy for NB.
+Lemma to Form prediction problem can be seen as a problem of reverse lemmalisation, which is theoretically can't reach the 100\% accuracy. The statistical method may be used to get a solution. We will give the result by applying the model MLE, Naive Bayes with the help of nltk package. And we will discuss the feature format and their influence to the performance while using the nltk naive bayes model. We found that how to extract feature is the key factor to improve accuracy for NB.
 \end{abstract}
 
 \section{Introduction}
@@ -60,16 +60,15 @@ We should implement a system to predict the pattern sequences by dealing with le
 
 \section{Analyze the data}
 
-\subsection{The characteristics of the data}
+\subsection{Description}
 The data in three sets are contains of English language, they are extracted from wikipedia and is encoded in utf-8. It comes from totally 2020 slices of 1000 articles. The article is represented by a succession of lines, and a line represents two terms delimited by <tab> presenting the format (form,lemma), in which the lemma corresponds to form, each sentence is marked with an empty line. 
 
 
 
 \subsection{The relation between Training set, Dev-Test Set and Test Set}
-Training set is a set of examples used for learning, that is to fit the parameters of the classifier. Dev-Test Set is a set of examples used to tune the parameters of a classifier Test set is used only to assess the performance of a fully-specified classifier.\cite{ripley_pattern_2007} We train our model in dev-test set, there is another advantage for this, is the \href{https://en.wikipedia.org/wiki/Cross-validation_(statistics)}{cross validation} for better training our model. During our development, we use a part of dev data, and split the data by 9:1 for assigning to training set and test set.
+Training set is a set of examples used for learning, that is to fit the parameters of the classifier. Dev-Test Set is a set of examples used to tune the parameters of a classifier Test set is used only to assess the performance of a fully-specified classifier.\cite{ripley_pattern_2007} 
 
-\todo{Short the sentence?}
-After having our classifier model, we can use it to predict with input. In our case, that means we can use the classifier model to predict the form with lemma of the word. After getting the predicted word, then we can compare with the data in test set, if the predicted label is matched with the form in test set, true\_positive increase by 1, if it isn't matched, true\_positive keeps the same value, after comparing all the words, we can calculate the accuracy for our classifier model. 
+We train our model in dev-test set, there is another advantage for this, is the \href{https://en.wikipedia.org/wiki/Cross-validation_(statistics)}{cross validation} for better training our model. During our development, we use a part of dev data, and split the data by 9:1 for assigning to training set and test set. After having our classifier model, we use it to predict the form with lemma of the word and then compare with the data in test set.
 
 \subsection{Rules based method or Probability based method}
 
@@ -82,7 +81,7 @@ First we need to know the grammatical tense according to the context, if it's pa
 
 Another method is by mathematic statistical processing. We build the mathematic model to learn the feature or rule for the problem. By using statistic method, we calculate the probability of the form by the model, then we choose the highest probability as the predict result. 
 
-Not to much similar work can be refereed on this lemma-form prediction problem. We choose the latter. Because rules based method will ask for the collection of the rules. It's obviously not the purpose of this project.
+Not so much similar work can be refereed on this lemma-form prediction problem. We choose the statistical method. Because rules based method will ask for the collection of the rules. It's obviously not the purpose of this project.
 
 \subsection{Reduce the noise}
 The punctuations in the raw data can be seen as the noise 
@@ -107,6 +106,7 @@ We list some features of these open source tools for the future needs in case:
 \href{http://lucene.apache.org/}{Apache Lucene:} work with finite state and get free search engine, Java
 
 \subsection{NLTK Naive Bayes Related}
+
 \begin{enumerate}
 \item nltk.ConditionalFreqDist - Mainly used to calculate the conditional frequence distribution. Can be taken as dict which each value is the FreqDist for each key. Take tuple list as parameter.
 \item nltk.NaiveBayesClassifier - The nltk Naive Bayes Classifier. The train() method of this class take the train data and return a classifier object, which can be use to invoke classify() to label the data. train() take labeled feature tuple list and classify() take the feature list.
@@ -120,6 +120,7 @@ We list some features of these open source tools for the future needs in case:
 , "Memory 8GB 1600 MHZ DDR3"\}
 
 \section{Fondation of Algorithm}
+Consider the prediction for single word a time, lemma can be treated as the input, and the form as label. 
 \begin{figure}[H]  
 \centering
 \includegraphics[width=0.8\textwidth]{process_flow.png}
@@ -129,10 +130,8 @@ We list some features of these open source tools for the future needs in case:
 
 \subsection{Maximum Likelihood Estimate and Bayes Theorem}
 Express our idea using Bayesian probability terminology:
-
 \begin{align*}
-posterior  &= \frac{prior \times likelihood}{evidence} \\
-           &\propto  prior \times likelihood \\
+posterior  &\propto  prior \times likelihood
 \end{align*}
 When we compare the probability of different form for lemma $l_i$, we are comparing the $p(f_i|l_i)$, posteriors  of lemma $l_i$ predicted as form $f_i$. It depends on the prior of the form $f_i$ and the likelihood of the lemma $l_i$ when form $f_i$ shows.
 \begin{equation}
@@ -210,7 +209,7 @@ Suppose our one feature NB model is classifying the lemma "find", the only featu
 
 According to the source code of NLTK class ELEProbDist which is the feature distribution function of NaiveBayesClassifier, it takes Expected Likelihood Estimate method, the probability distribution is given as below:\cite{loper_nltk.probability_nodate}
 \begin{equation}
-p(x_i)=\frac{C+0.5}{N+B/2} \qquad X = \{x_1,x_2,\dots,x_o,\dots\}
+p(x_i)=\frac{C+0.5}{N+0.5B} \qquad X = \{x_1,x_2,\dots,x_o,\dots\}
 \end{equation}
 
 $C$ is the frequency we count with $N$ outcomes and $B$ the number of the observed value of $X$. 
@@ -254,7 +253,7 @@ b2 =
 
 It shows us adding ("finding","finding") does matter the probability. Compare the train data set (2) to (1) for $l_i$. So those pairs which contain the forms of the current objective lemma added to the train set.
 \begin{align*}
-&train\_data\_set_{l_i} (1) = pairs_{l_{i}} = [ (l_{i1},f_{i1})*freq(l_{i1},f_{i1}),\dots,(l_{ik},f_{ik})*freq(l_{i1},f_{ik})] \\
+&train\_data\_set_{l_i} (1) = pairs_{l_{i}} = [ (l_{i},f_{i1})*freq(l_{i},f_{i1}),\dots,(l_{i},f_{ik})*freq(l_{i},f_{ik})] \\
 &train\_data\_set_{l_i} (2)= \sum_{j} pairs_{f_{ij}} \\
 &pairs_{f_{ij}}=[ (l_{j1},f_{ij})*freq(l_{j1},f_{ij}),\dots,(l_{jm},f_{ij})*freq(l_{jm},f_{ij}) ] \\ 
 &f_{i1},\dots,f_{ik} \in Forms_{l_i} \\
@@ -347,10 +346,10 @@ dev-24 & 84.12\%   & 89.53\%  & 87,93\%   \\ \hline
 We believe that Part of Speech tagging will help to eliminate the ambiguity of the lemma, e.g. play as verb or as noun. Result shows it will slightly increase the accuracy but not more than 0.4\%, which is a little lower than we expected. The possible reason for this is: firstly, the lemmas who have the ambiguity between different kinds of POS tagging are not so many. Second, apply the real text trained POS tagging to lemma, it gives a relative lower performance also.
 
 \subsection*{HMM}
-Our first idea is to apply HMM to this problem. The output observation is the lemma sequence and the form sequence are hidden states. But after the trial of the HMM tagger in NLTK, and we found it's incredibly slow. A training model with only 2000 sentences predict incorrectly 5 words in about 5 minutes. \todo{More explication?} The mapping result is unwatchable. We guess that's because we use a supervised training method. For calculating the hidden state transfer probability, we deliver our labeled sequence for training, but there are a lot of possibilities for such situation while $label_{i-1}$ = 'to', the next word $label_i$ could be personal pronoun or any verb. So 2000 sentences is very far away for our feasible training set. We will continue research this problem after the report.
+Our first idea is to apply HMM to this problem. The output observation is the lemma sequence and the form sequence are hidden states. But after the trial of the HMM tagger in NLTK, and we found it's incredibly slow. A training model with only 2000 sentences predict incorrectly 5 words in about 5 minutes. 
 
 \subsection*{Non-utf8}
-The appearance  of the Non-utf8 will cause the code can't succeed to decode the corpus text in encoding "utf8". We found most of the non-utf8 characters show in lemmas and the non-utf8 characters byte minus the byte at correspond position in form equals 0x20. It's the value we usually use to get a uppercase letter to lowercase. So we guess the problem is caused by the program lemmalisation lowercased incorrectly some utf-8 letters. IF the encoding "latin1" is used for both read and write the corpus file. The problem is ignored. Otherwise, if the encoding utf-8 is used to read the file. Since the non-utf8 will cause the error of the decoder, two situation will happen to the non-utf8 characters: ignore or replace. And both situation will cause the mismatching of the lemma and form. It will slight affect the accuracy of the prediction. 
+The appearance  of the Non-utf8 will cause the code can't succeed to decode the corpus text in encoding "utf8". We found most of the non-utf8 characters show in lemmas and the non-utf8 characters byte minus the byte at correspond position in form equals 0x20. It's the value we usually use to get a uppercase letter to lowercase. So we guess the problem is caused by the program lemmalisation lowercased incorrectly some utf-8 letters. If the encoding "latin1" is used for both read and write the corpus file. The problem is ignored. Otherwise, if the encoding utf-8 is used to read the file. Since the non-utf8 will cause the error of the decoder, two situation will happen to the non-utf8 characters: ignore or replace. And both situation will cause the mismatching of the lemma and form. It will slight affect the accuracy of the prediction. 
 Since we haven't done the complete statistics for these non-utf8 characters, the reason caused this problem remains a guess. But if the related work would like to be done by someone, We suggest the exception tackle mechanism in python to fix or count these non-utf8 characters. It seems very practical.  
 
 \section{Discussion}
