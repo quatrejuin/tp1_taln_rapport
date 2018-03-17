@@ -324,7 +324,7 @@ And for the unigram, the model performs the same with two kinds of format featur
 
 
 \subsubsection{Over-fitting?}
-Actually for Naive Bayes, another advantage is that it's so simple, so few parameters to be trained. It makes it won't be trapped by the local maximum. So we believe that we don't need to worry about the over-fitting problem.
+Originally for Naive Bayes, one of its advantage is that it's so simple, so few parameters to be trained. This fact makes it won't be trapped by the local maximum. But since in our model, we train the model separately for each word. Let the model greedily search for the max probability locally rather than locally. We have the reason to believe that this problem exists in our problem, but we haven't prove it.
 
 
 \section{Related work}
